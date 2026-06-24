@@ -1,0 +1,7 @@
+{
+  "name": "My Test Suite Report",
+  "open": true,
+  "historyPath": "./history.jsonl",
+  "appendHistory": true,
+  "historyLimit": 5
+}

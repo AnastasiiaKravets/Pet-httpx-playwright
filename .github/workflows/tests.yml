@@ -1,0 +1,77 @@
+name: Tests & Allure Report
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      ENV: staging
+      BASE_API_URL: ${{ secrets.BASE_API_URL }}
+      BASE_UI_URL: ${{ secrets.BASE_UI_URL }}
+      BROWSER: chromium
+      AUTH_KEY: ${{ secrets.AUTH_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: playwright install --with-deps chromium
+
+      - name: Install Allure 3 CLI
+        run: npm install -g allure-commandline@3
+
+      - name: Run tests
+        run: pytest tests/ --alluredir=allure-results -o "addopts=--alluredir=allure-results"
+        continue-on-error: true
+
+#      - name: Checkout gh-pages for history
+#        uses: actions/checkout@v4
+#        continue-on-error: true
+#        with:
+#          ref: gh-pages
+#          path: gh-pages
+#
+#      - name: Restore Allure history
+#        run: |
+#          if [ -d gh-pages/history ]; then
+#            cp -r gh-pages/history allure-results/history
+#          fi
+#        continue-on-error: true
+#
+      - name: Generate Allure report
+        run: allure generate allure-results -o allure-report --clean
+
+      - name: Run Allure Action
+        uses: allure-framework/allure-action@v0
+        with:
+          report-directory: "./allure-report"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-report
