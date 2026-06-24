@@ -19,8 +19,8 @@ jobs:
 
     env:
       ENV: staging
-      BASE_API_URL: ${{ secrets.BASE_API_URL }}
-      BASE_UI_URL: ${{ secrets.BASE_UI_URL }}
+      BASE_API_URL: ${{ vars.BASE_API_URL }}
+      BASE_UI_URL: ${{ vars.BASE_UI_URL }}
       BROWSER: chromium
       AUTH_KEY: ${{ secrets.AUTH_KEY }}
 
