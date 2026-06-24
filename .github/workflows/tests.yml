@@ -75,7 +75,7 @@ jobs:
         continue-on-error: true
 
       - name: Generate Allure Report
-        run: allure generate allure-results --output allure-report --clean
+        run: allure generate allure-results --output allure-report
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
