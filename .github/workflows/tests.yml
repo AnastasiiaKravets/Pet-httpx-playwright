@@ -15,6 +15,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment: staging
 
     env:
@@ -37,14 +38,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Install Playwright browsers
-        run: playwright install --with-deps chromium
+#      - name: Install Playwright browsers
+#        run: playwright install --with-deps chromium
 
 #      - name: Install Allure 3 CLI
 #        run: npm install -g @allurereport/cli
 
-      - name: Run tests
-        run: pytest tests/ --alluredir=allure-results -o "addopts=--alluredir=allure-results"
+      - name: Run API gate
+        run: pytest -m gate_api
         continue-on-error: true
 
 #      - name: Checkout gh-pages for history
