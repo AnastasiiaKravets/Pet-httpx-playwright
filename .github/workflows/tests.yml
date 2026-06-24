@@ -41,8 +41,8 @@ jobs:
 #      - name: Install Playwright browsers
 #        run: playwright install --with-deps chromium
 
-      - name: Install Allure 3 CLI
-        run: npm install -g @allurereport/cli
+      - name: Install Allure 3
+        run: npm install -g allure
 
       - name: Run API gate
         run: pytest -m api
