@@ -39,8 +39,8 @@ jobs:
       - name: Install Playwright browsers
         run: playwright install --with-deps chromium
 
-      - name: Install Allure 3 CLI
-        run: npm install -g @allurereport/cli
+#      - name: Install Allure 3 CLI
+#        run: npm install -g @allurereport/cli
 
       - name: Run tests
         run: pytest tests/ --alluredir=allure-results -o "addopts=--alluredir=allure-results"
