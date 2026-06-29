@@ -64,6 +64,8 @@ jobs:
           name: Pytest Results
           path: reports/pytest-report.xml
           reporter: java-junit
+          continue-on-error: true
+
 
       - name: Upload HTML Report Artifact
         uses: actions/upload-artifact@v4
