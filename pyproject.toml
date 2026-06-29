@@ -1,13 +1,12 @@
 [tool.pytest.ini_options]
 
-addopts = "--alluredir allure-results --junit-xml=reports/pytest-report.xml"
+addopts = "--alluredir allure-results --junit-xml=reports/pytest-report.xml --html=reports/report.html --self-contained-html"
 #junit_suite_name = "reports"
 
 # --headed
 #generate_report_on_test = true
 
 #addopts = "--headed --tracing retain-on-failure -n 3"
-#--html=report.html --self-contained-html
 
 #from shell debug mode
 #$env:PWDEBUG=1

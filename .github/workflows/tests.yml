@@ -65,6 +65,13 @@ jobs:
           path: reports/pytest-report.xml
           reporter: java-junit
 
+      - name: Upload HTML Report Artifact
+        uses: actions/upload-artifact@v4
+        if: always() # Ensures the HTML report is saved even if tests fail
+        with:
+          name: pytest-html-report
+          path: reports/report.html
+
       - name: Get Allure history
         uses: actions/checkout@v4
         continue-on-error: true
