@@ -74,7 +74,6 @@ jobs:
           retention-days: 30
 
       - name: Purge Old Artifacts
-        uses: c-py/action-remove-artifacts@v3
         uses: actions/github-script@v7
         if: always()
         with:
