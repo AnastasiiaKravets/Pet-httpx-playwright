@@ -1,0 +1,1 @@
+{'id': 23, 'name': 'Adam Smith', 'photoUrls': ['https://dummyimage.com/196x10'], 'status': 'available'}
