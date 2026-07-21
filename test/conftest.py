@@ -1,7 +1,7 @@
 import pytest
 
 from config import settings
-from src.API.API_Client import API_Client
+from src.api.API_Client import API_Client
 
 
 @pytest.fixture(scope="package")
