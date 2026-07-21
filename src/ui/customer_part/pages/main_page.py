@@ -17,3 +17,7 @@ class MainPage(BasePage):
         self.heading = self.page.locator('.hero-content h1')
         self.heading_description = self.page.locator('.hero-content p')
         self.booking_button = self.page.locator('.hero-content').get_by_role('link', name='Book Now')
+
+        self.checkin_input = self.page.locator('section#booking input').first
+        self.checkout_input = self.page.locator('section#booking input').last
+        self.check_availability_button = self.page.get_by_role('button', name='Check Availability')
