@@ -1,8 +1,8 @@
 import pytest
 
-from src.api.dummy_json_service.helpers.API_assertions import assert_pagination, assert_unique_field, \
+from src.api.dummy_json_service.helpers.assertions import assert_pagination, assert_unique_field, \
     assert_products_in_cart
-from src.api.dummy_json_service.helpers.API_utils import get_random_id, get_cart_payload
+from src.api.dummy_json_service.helpers.data_helper import get_random_id, get_cart_payload
 from src.api.dummy_json_service.models.cart_models import CartListResponse, CartResponse, DeletedCartResponse
 from src.api.dummy_json_service.models.common_models import BasicErrorResponse
 

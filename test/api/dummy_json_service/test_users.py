@@ -1,8 +1,8 @@
 import pytest
 from faker import Faker
 
-from src.api.dummy_json_service.helpers.API_assertions import assert_pagination, assert_unique_field
-from src.api.dummy_json_service.helpers.API_utils import get_random_id
+from src.api.dummy_json_service.helpers.assertions import assert_pagination, assert_unique_field
+from src.api.dummy_json_service.helpers.data_helper import get_random_id
 from src.api.dummy_json_service.models.cart_models import CartListResponse
 from src.api.dummy_json_service.models.user_models import UserResponse, UserListResponse, DeletedUserResponse
 

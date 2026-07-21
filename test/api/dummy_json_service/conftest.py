@@ -2,7 +2,7 @@ import pytest
 
 from config import settings
 from src.api.API_Client import API_Client
-from src.api.dummy_json_service.helpers.API_utils import get_valid_user
+from src.api.dummy_json_service.helpers.data_helper import get_valid_user
 from src.api.dummy_json_service.models.auth_models import AuthResponse
 
 

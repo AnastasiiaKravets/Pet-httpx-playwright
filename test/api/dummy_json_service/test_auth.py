@@ -1,6 +1,6 @@
 import pytest
 
-from src.api.dummy_json_service.helpers.API_utils import get_valid_user
+from src.api.dummy_json_service.helpers.data_helper import get_valid_user
 from src.api.dummy_json_service.models.auth_models import AuthResponse
 from src.api.dummy_json_service.models.common_models import BasicErrorResponse
 from src.api.dummy_json_service.models.user_models import UserResponse

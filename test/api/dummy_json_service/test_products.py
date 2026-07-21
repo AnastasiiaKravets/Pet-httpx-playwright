@@ -3,8 +3,8 @@ import random
 import pytest
 from faker import Faker
 
-from src.api.dummy_json_service.helpers.API_assertions import assert_pagination, assert_unique_field
-from src.api.dummy_json_service.helpers.API_utils import get_random_id
+from src.api.dummy_json_service.helpers.assertions import assert_pagination, assert_unique_field
+from src.api.dummy_json_service.helpers.data_helper import get_random_id
 from src.api.dummy_json_service.models.common_models import BasicErrorResponse
 from src.api.dummy_json_service.models.product_models import ProductResponse, ProductListResponse, \
     DeletedProductResponse
