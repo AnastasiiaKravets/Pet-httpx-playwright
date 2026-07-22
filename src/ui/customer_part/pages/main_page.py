@@ -1,5 +1,5 @@
 from src.ui.common.base_page import BasePage
-from src.ui.customer_part.components.footer_component import FooterComponent
+from src.ui.customer_part.components.footer import FooterComponent
 from src.ui.customer_part.components.header import HeaderComponent
 from src.ui.customer_part.components.rooms import RoomListComponent
 
