@@ -3,7 +3,7 @@ from playwright.sync_api import expect
 from src.api.restfull_booker_service.clients.branding_client import BrandingClient
 from src.api.restfull_booker_service.clients.room_client import RoomClient
 from src.ui.customer_part.pages.main_page import MainPage
-from src.ui.utils.helper import text
+from src.ui.utils.helper import text, price
 
 
 def test_room_list_data(page, api_client):
@@ -21,7 +21,7 @@ def test_room_list_data(page, api_client):
         assert text(actual_room.title) == expected_room.type
         assert text(actual_room.description) == expected_room.description
         assert actual_room.get_amenities_text() == expected_room.features
-        assert actual_room.get_price() == expected_room.room_price
+        assert price(actual_room.price) == expected_room.room_price
 
 
 def test_hotel_data(page, api_client):

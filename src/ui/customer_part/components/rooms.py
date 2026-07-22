@@ -1,5 +1,3 @@
-import re
-
 from playwright.sync_api import Page, Locator
 
 from src.ui.common.base_component import BaseComponent
@@ -46,7 +44,3 @@ class RoomCardComponent(BaseComponent):
 
     def get_amenities_text(self):
         return text(self.amenities).split(' ')
-
-    def get_price(self):
-        price = re.sub(r'[^0-9]', '', text(self.price))
-        return int(price)
