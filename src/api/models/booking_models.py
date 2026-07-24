@@ -16,8 +16,8 @@ class BookingModelRequest(StrictModel):
     last_name: str = Field(..., alias="lastname", min_length=3, max_length=30)
     deposit_paid: bool = Field(..., alias="depositpaid")
     booking_dates: BookingDates = Field(..., alias="bookingdates")
-    email: EmailStr
-    phone: str = Field(..., min_length=11, max_length=21)
+    email: EmailStr | None = None
+    phone: str | None = Field(None, min_length=11, max_length=21)
 
 
 class BookingModelResponse(StrictModel):
@@ -29,5 +29,10 @@ class BookingModelResponse(StrictModel):
     booking_dates: BookingDates = Field(..., alias="bookingdates")
 
 
-class BookingListModel(StrictModel):
+class BookingListModelResponse(StrictModel):
     bookings: List[BookingModelResponse]
+
+
+class BookingUpdateModelResponse(StrictModel):
+    booking_id: PositiveInt = Field(..., alias="bookingid")
+    booking: BookingModelResponse

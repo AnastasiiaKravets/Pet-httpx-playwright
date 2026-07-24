@@ -1,5 +1,6 @@
 import pytest
 
+from src.api.models.booking_models import BookingListModelResponse
 from src.api.models.common_models import ExtendedErrorResponse
 from src.api.models.room_models import Room, RoomList
 from src.helpers.date_helper import get_future_date, get_past_date, get_date_today
@@ -103,4 +104,17 @@ def test_delete_room_by_id(authorized_api_client, random_existing_room_id):
     assert response.status_code == 500
 
 
-    # verify all related booking was deleted
+@pytest.mark.api
+@pytest.mark.workflow
+def test_delete_room_with_booking(authorized_api_client, booking_data):
+    room_id = booking_data.room_id
+
+    response = authorized_api_client.get("/booking", params={'roomid': room_id})
+    existed_booking = BookingListModelResponse.model_validate(response.json()).bookings
+
+    response = authorized_api_client.delete(f"/room/{room_id}")
+    assert response.status_code == 202
+
+    for booking in existed_booking:
+        response = authorized_api_client.get(f"/booking/{booking.booking_id}")
+        assert response.status_code == 404
