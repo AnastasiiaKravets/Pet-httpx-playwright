@@ -3,6 +3,7 @@ from src.api.API_Client import API_Client
 from src.helpers.auth_manager import AuthManager
 
 from test.fixtures.cleanup import *
+from test.fixtures.prepare_data import *
 
 
 @pytest.fixture(scope="session")
