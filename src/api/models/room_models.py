@@ -2,7 +2,7 @@ from typing import Literal, List
 
 from pydantic import Field
 
-from src.api.restfull_booker_service.models.common_models import StrictModel
+from src.api.models.common_models import StrictModel
 
 
 class Room(StrictModel):

@@ -1,6 +1,6 @@
 from pydantic import Field, EmailStr, field_validator
 
-from src.api.restfull_booker_service.models.common_models import StrictModel
+from src.api.models.common_models import StrictModel
 
 
 class Address(StrictModel):

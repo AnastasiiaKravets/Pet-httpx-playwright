@@ -1,5 +1,5 @@
-from src.api.restfull_booker_service.clients.base_client import BaseClient
-from src.api.restfull_booker_service.models.room_models import RoomList
+from src.api.clients.base_client import BaseClient
+from src.api.models.room_models import RoomList
 
 
 class RoomClient(BaseClient):

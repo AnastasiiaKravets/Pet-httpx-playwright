@@ -1,9 +1,9 @@
 from typing import Any
 
 import httpx
+from pydantic import BaseModel
 
 from config import settings
-from src.api.dummy_json_service.models.common_models import BaseModel
 
 
 class API_Client:

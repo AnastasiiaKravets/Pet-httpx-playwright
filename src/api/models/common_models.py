@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -11,6 +13,13 @@ class StrictModel(BaseModel):
 
 class BasicErrorResponse(StrictModel):
     error: str
+
+
+class ExtendedErrorResponse(StrictModel):
+    timestamp: datetime
+    status: int
+    error: str
+    path: str
 
 class BasicWarningResponse(StrictModel):
     message: str

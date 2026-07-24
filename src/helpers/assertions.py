@@ -2,7 +2,6 @@ from collections.abc import Iterable
 from typing import Any
 
 from pydantic import BaseModel
-
 from src.api.dummy_json_service.models.common_models import PaginatedStrictModel
 
 

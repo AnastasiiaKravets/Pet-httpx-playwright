@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     RESTFULL_PASSWORD: str
 
     BASE_UI_URL: str
+    DOMAIN: str
     BROWSER: BrowserType
     DEVICE: str | None = None  # none for desktop, value for mobile device, ex. 'Galaxy Tab S4'
     HEADLESS: bool

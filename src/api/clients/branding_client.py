@@ -1,5 +1,5 @@
-from src.api.restfull_booker_service.clients.base_client import BaseClient
-from src.api.restfull_booker_service.models.branding_models import Hotel
+from src.api.clients.base_client import BaseClient
+from src.api.models.branding_models import Hotel
 
 
 class BrandingClient(BaseClient):

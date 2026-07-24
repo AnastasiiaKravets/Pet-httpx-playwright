@@ -1,6 +1,6 @@
 from pydantic import Field
 
-from src.api.dummy_json_service.models.common_models import StrictModel
+from src.api.models.common_models import StrictModel
 
 
 class AuthRequest(StrictModel):
