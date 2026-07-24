@@ -1,8 +1,8 @@
 import pytest
 
-from src.api.restfull_booker_service.models.auth_models import LogoutResponse
-from src.api.restfull_booker_service.models.auth_models import Token, ValidateResponse
-from src.api.restfull_booker_service.models.common_models import BasicErrorResponse, BasicWarningResponse
+from src.api.models.auth_models import LogoutResponse
+from src.api.models.auth_models import Token, ValidateResponse
+from src.api.models.common_models import BasicErrorResponse, BasicWarningResponse
 from src.data.user_data import get_valid_user
 
 
@@ -66,9 +66,8 @@ def test_logout(authorized_api_client, token):
 @pytest.mark.api
 @pytest.mark.parametrize('token_payload, expected_status_code, error_message',
                          [('', 400, 'Token is required')])
-def test_logout(authorized_api_client, token_payload, expected_status_code, error_message):
+def test_logout_invalid_data(authorized_api_client, token_payload, expected_status_code, error_message):
     response = authorized_api_client.post('auth/logout', payload=Token(token=token_payload))
-    print(response.text)
     assert response.status_code == expected_status_code
     error_response = BasicWarningResponse.model_validate(response.json())
     assert error_response.message, error_message
