@@ -1,6 +1,7 @@
+import pytest
 from playwright.sync_api import expect
 
-from src.api.restfull_booker_service.clients.room_client import RoomClient
+from src.api.clients import RoomClient
 from src.data.user_data import get_user_reservation_data
 from src.helpers.date_helper import get_date_today, get_future_date, get_only_day
 from src.ui.customer_part.pages.main_page import MainPage
@@ -8,6 +9,7 @@ from src.ui.customer_part.pages.room_details_page import RoomDetailsPage
 from src.ui.utils.helper import text, price
 
 
+@pytest.mark.ui
 def test_room_availability(page, api_client):
     date_from = get_date_today()
     date_to = get_future_date(delta_in_days=5)
@@ -34,17 +36,18 @@ def test_room_availability(page, api_client):
         assert price(actual_room.price) == expected_room.room_price
 
 
-def test_successful_booking_for_a_few_days(page, available_room, clear_booking_data):
+@pytest.mark.ui
+def test_successful_booking_for_a_few_days(page, available_room_in_future, clear_booking_data):
     expected_days = 3  # by default from test data
     user_reservation_data = get_user_reservation_data()
-    clear_booking_data.update(**available_room)  # to clear booking data after test
+    clear_booking_data.update(**available_room_in_future)  # to clear booking data after test
 
-    room_detail_page = RoomDetailsPage(page, **available_room)
+    room_detail_page = RoomDetailsPage(page, **available_room_in_future)
     room_detail_page.open()
     room_detail_page.booking_details.scroll_into_view()
 
     selected_days = room_detail_page.booking_details.calendar.get_selected_days()
-    assert get_only_day(available_room['date_from']) == selected_days[0], "Different first day was selected"
+    assert get_only_day(available_room_in_future['date_from']) == selected_days[0], "Different first day was selected"
     assert len(selected_days) == expected_days, "fShould be {expected_days} selected days for initial test data"
 
     room_detail_page.booking_details.reserve_button.click()
@@ -55,12 +58,13 @@ def test_successful_booking_for_a_few_days(page, available_room, clear_booking_d
 
     expect(room_detail_page.booking_details.title).to_have_text('Booking Confirmed')
     assert text(
-        room_detail_page.booking_details.confirmed_dates) == f'{available_room["date_from"]} - {available_room["date_to"]}'
+        room_detail_page.booking_details.confirmed_dates) == f'{available_room_in_future["date_from"]} - {available_room_in_future["date_to"]}'
     expect(room_detail_page.booking_details.return_button).to_be_visible()
 
 
-def test_form_validation_empty_form(page, available_room):
-    room_detail_page = RoomDetailsPage(page, **available_room)
+@pytest.mark.ui
+def test_form_validation_empty_form(page, available_room_in_future):
+    room_detail_page = RoomDetailsPage(page, **available_room_in_future)
     room_detail_page.open()
     room_detail_page.booking_details.scroll_into_view()
 

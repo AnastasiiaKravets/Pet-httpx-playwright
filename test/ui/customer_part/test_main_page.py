@@ -1,11 +1,13 @@
+import pytest
 from playwright.sync_api import expect
 
-from src.api.restfull_booker_service.clients.branding_client import BrandingClient
-from src.api.restfull_booker_service.clients.room_client import RoomClient
+from src.api.clients import BrandingClient
+from src.api.clients import RoomClient
 from src.ui.customer_part.pages.main_page import MainPage
 from src.ui.utils.helper import text, price
 
 
+@pytest.mark.ui
 def test_room_list_data(page, api_client):
     expected_rooms_data = RoomClient(api_client).get_all_rooms()
     expected_room_count = min(len(expected_rooms_data), 3)  # by default there is only 3 rooms are shown at UI
@@ -24,6 +26,7 @@ def test_room_list_data(page, api_client):
         assert price(actual_room.price) == expected_room.room_price
 
 
+@pytest.mark.ui
 def test_hotel_data(page, api_client):
     expected_hotel_data = BrandingClient(api_client).get_hotel_details()
     expected_address_text = (f'{expected_hotel_data.address.line1}, {expected_hotel_data.address.line2}, '
