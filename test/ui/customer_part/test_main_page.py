@@ -1,8 +1,8 @@
 import pytest
 from playwright.sync_api import expect
 
-from src.api.clients import BrandingClient
-from src.api.clients import RoomClient
+from src.api.clients.branding_client import BrandingClient
+from src.api.clients.room_client import RoomClient
 from src.ui.customer_part.pages.main_page import MainPage
 from src.ui.utils.helper import text, price
 

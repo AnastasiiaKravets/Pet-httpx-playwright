@@ -1,6 +1,6 @@
 from src.api.clients.base_client import BaseClient
 from src.api.models.booking_models import BookingListModelResponse, BookingModelResponse
-from src.data.user_data import get_booking_payload
+from src.data.data_generators import get_booking_payload
 
 
 class BookingClient(BaseClient):

@@ -1,8 +1,8 @@
 import pytest
 from playwright.sync_api import expect
 
-from src.api.clients import RoomClient
-from src.data.user_data import get_user_reservation_data
+from src.api.clients.room_client import RoomClient
+from src.data.data_generators import get_user_reservation_data
 from src.helpers.date_helper import get_date_today, get_future_date, get_only_day
 from src.ui.customer_part.pages.main_page import MainPage
 from src.ui.customer_part.pages.room_details_page import RoomDetailsPage
@@ -15,7 +15,6 @@ def test_room_availability(page, api_client):
     date_to = get_future_date(delta_in_days=5)
     expected_rooms_data = RoomClient(api_client).available_rooms(date_from, date_to)
     expected_room_count = min(len(expected_rooms_data), 3)  # by default there is only 3 rooms are shown at UI
-    print(expected_rooms_data)
 
     main_page = MainPage(page)
     main_page.open()

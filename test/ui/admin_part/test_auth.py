@@ -1,7 +1,7 @@
 import pytest
 from playwright.sync_api import Page, expect
 
-from src.data.user_data import get_valid_user
+from src.data.data_generators import get_valid_user
 from src.ui.admin_part.pages.admin_room_page import AdminRoomPage
 from src.ui.admin_part.pages.login_page import LoginPage
 

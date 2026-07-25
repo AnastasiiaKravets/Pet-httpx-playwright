@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from config import settings
 from src.api.API_Client import API_Client
 from src.api.models.auth_models import Token
-from src.data.user_data import get_valid_user
+from src.data.data_generators import get_valid_user
 
 
 class AuthManager:

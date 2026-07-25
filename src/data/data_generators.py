@@ -1,7 +1,10 @@
+import random
+
 from faker import Faker
 
 from config import settings
 from src.api.models.booking_models import BookingDates, BookingModelRequest
+from src.api.models.room_models import Room, RoomType, RoomFeatures
 
 
 def get_valid_user():

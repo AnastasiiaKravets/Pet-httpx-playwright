@@ -3,7 +3,7 @@ import pytest
 from src.api.models.auth_models import LogoutResponse
 from src.api.models.auth_models import Token, ValidateResponse
 from src.api.models.common_models import BasicErrorResponse, BasicWarningResponse
-from src.data.user_data import get_valid_user
+from src.data.data_generators import get_valid_user
 
 
 @pytest.mark.api
@@ -74,7 +74,7 @@ def test_logout_invalid_data(authorized_api_client, token_payload, expected_stat
 
 
 @pytest.mark.api
-@pytest.mark.workflows
+@pytest.mark.workflow
 def test_full_token_validation(api_client):
     """
     Login -> Validate token -> logout -> Validate token

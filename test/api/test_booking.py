@@ -2,7 +2,7 @@ import pytest
 
 from src.api.models.booking_models import BookingModelResponse, BookingUpdateModelResponse
 from src.api.models.common_models import ExtendedErrorResponse
-from src.data.user_data import get_booking_payload
+from src.data.data_generators import get_booking_payload
 from src.helpers.date_helper import get_future_date
 
 
