@@ -104,10 +104,14 @@ These areas are outside the scope of this portfolio project.
 
 ## Coverage Matrix
 
-| Feature | API | Customer UI | Admin UI  | Integration | Reason |
-|----------|:---:|:-----------:|:---------:|:-----------:|--------|
-| Authentication | ✅ | — | Partially | — | Authentication is a critical business feature and demonstrates authorization testing. |
-
+| Feature         |   API   | Customer UI | Admin UI  | Integration | Reason                                                                                |
+|-----------------|:-------:|:-----------:|:---------:|:-----------:|---------------------------------------------------------------------------------------|
+| Authentication  |    ✅    |      —      | Partially |      —      | Authentication is a critical business feature and demonstrates authorization testing. |
+| Room Management | Partial |    Read     |     —     |      —      | Covers business entities and data synchronization across application layers.          |
+| Booking         | Partial |   Create    |  Manage   |      —      | Core business functionality of the application.                                       |
+| Branding        |    —    |   Display   |     —     |      —      | Demonstrate data visibility from API.                                                 |
+| Messages        |    —    |      —      |  Display  |      ✅      | Covers asynchronous business flow.                                                    |
+| Reporting       |    —    |      —      |  Display  |      ✅      | Verifies that reporting reflects backend data correctly.                              |
 ---
 
 ## Layer Responsibilities
