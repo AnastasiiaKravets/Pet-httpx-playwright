@@ -14,7 +14,7 @@ def test_room_list_data(page, api_client):
 
     main_page = MainPage(page)
     main_page.open()
-    main_page.room_list.scroll_into_view()
+    main_page.room_list.wait_at_least_one_room()
 
     assert main_page.room_list.count_cards() == expected_room_count, f"There should be {expected_room_count} rooms visible"
 

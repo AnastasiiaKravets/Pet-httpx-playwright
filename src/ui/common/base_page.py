@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 
 from config import settings
 
@@ -17,7 +17,9 @@ class BasePage(ABC):
 
     def __init__(self, page: Page):
         self.page = page
+        self.loading_text = self.page.locator("//p[contains(text(), 'Loading...')]")
 
     def open(self):
         self.page.goto(self.url_part)
+        expect(self.loading_text).not_to_be_visible()
         return self

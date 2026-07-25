@@ -1,20 +1,21 @@
-from playwright.sync_api import Locator
+from playwright.sync_api import Locator, expect
 
 from src.ui.admin_part.components.header import HeaderComponent
 from src.ui.common.base_page import BasePage
 
 
 class AdminRoomDetailsPage(BasePage):
-    url_part = 'admin/rooms'
+    url_part = 'admin/room'
 
     def __init__(self, page):
         super().__init__(page)
         self.header = HeaderComponent(page)
 
-        self.booking_rows = self.page.locator('div.details')
+        self.booking_rows = self.page.locator('div.detail')
 
     def open(self, room_id):
         self.page.goto(f'{self.url_part}/{room_id}')
+        expect(self.loading_text).not_to_be_visible()
         return self
 
     def _find_row(self, check_in: str, check_out: str) -> Locator:
@@ -85,6 +86,9 @@ class AdminRoomDetailsPage(BasePage):
                 return True
 
         return False
+
+    def wait_at_least_one_booking(self, timeout: int = 1000):
+        expect(self.booking_rows.first).to_be_visible(timeout=timeout), "There are no booking rows"
 
 
 from pydantic import BaseModel

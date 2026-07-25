@@ -44,6 +44,7 @@ def test_successful_booking_for_a_few_days(page, available_room_in_future, clear
     room_detail_page = RoomDetailsPage(page, **available_room_in_future)
     room_detail_page.open()
     room_detail_page.booking_details.scroll_into_view()
+    room_detail_page.booking_details.calendar.next_button.click()
 
     selected_days = room_detail_page.booking_details.calendar.get_selected_days()
     assert get_only_day(available_room_in_future['date_from']) == selected_days[0], "Different first day was selected"
@@ -56,8 +57,8 @@ def test_successful_booking_for_a_few_days(page, available_room_in_future, clear
     room_detail_page.booking_details.reserve_button.click()
 
     expect(room_detail_page.booking_details.title).to_have_text('Booking Confirmed')
-    assert text(
-        room_detail_page.booking_details.confirmed_dates) == f'{available_room_in_future["date_from"]} - {available_room_in_future["date_to"]}'
+    assert (text(room_detail_page.booking_details.confirmed_dates) ==
+            f'{available_room_in_future["date_from"]} - {available_room_in_future["date_to"]}')
     expect(room_detail_page.booking_details.return_button).to_be_visible()
 
 

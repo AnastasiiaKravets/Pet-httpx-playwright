@@ -1,4 +1,4 @@
-from playwright.sync_api import Page, Locator
+from playwright.sync_api import Page, Locator, expect
 
 from src.ui.common.base_component import BaseComponent
 from src.ui.utils.helper import text
@@ -25,6 +25,9 @@ class RoomListComponent(BaseComponent):
 
     def open_first_room(self):
         RoomCardComponent(self.room_cards.first).book_button.click()
+
+    def wait_at_least_one_room(self, timeout: int = 1000):
+        expect(self.room_cards.first).to_be_visible(timeout=timeout), "There are no room cards"
 
 
 class RoomCardComponent(BaseComponent):

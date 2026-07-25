@@ -24,4 +24,5 @@ markers = [
     "slow:         >10s; excluded from fast runs",
     "serial:       cannot run in parallel; use -n0",
     "wip:          in progress; excluded from all CI runs",
+    "workflow:     tests involves a few API endpoints"
 ]

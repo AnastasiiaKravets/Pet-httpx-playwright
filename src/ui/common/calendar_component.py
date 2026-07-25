@@ -42,7 +42,7 @@ class CalendarComponent(BaseComponent):
 
         self.page.page.mouse.up()
 
-    def get_selected_days(self) -> list[int]:
+    def get_selected_days(self, title='Selected') -> list[int]:
         """
         Returns all selected days of the current month.
 
@@ -56,7 +56,7 @@ class CalendarComponent(BaseComponent):
         for row_index in range(month_rows.count()):
             row = month_rows.nth(row_index)
 
-            event = row.locator(".rbc-event-content[title='Selected']")
+            event = row.locator(f".rbc-event-content[title*='{title}']")
 
             if event.count() == 0:
                 continue
