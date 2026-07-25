@@ -2,7 +2,7 @@ import pytest
 
 from src.api.models.booking_models import BookingListModelResponse
 from src.api.models.common_models import ExtendedErrorResponse
-from src.api.models.room_models import Room, RoomList
+from src.api.models.room_models import RoomResponse, RoomList
 from src.helpers.date_helper import get_future_date, get_past_date, get_date_today
 
 
@@ -21,7 +21,7 @@ def test_get_rooms_availability(api_client):
     response = api_client.get("/room", params=params)
 
     assert response.status_code == 200
-    Room.model_validate(response.json())
+    RoomList.model_validate(response.json())
 
 
 @pytest.mark.api
@@ -30,7 +30,7 @@ def test_get_rooms_availability(api_client):
     (get_past_date(10), get_past_date(7)),
     (get_date_today(), get_date_today())
 ])
-def test_room_availability_invalid_bussiness_data_rules(api_client, check_in, check_out):
+def test_room_availability_invalid_business_data_rules(api_client, check_in, check_out):
     params = dict(check_in=check_in,
                   check_out=check_out)
     response = api_client.get("/room", params=params)
@@ -57,13 +57,13 @@ def test_room_availability_invalid_data_format(api_client, check_in, check_out):
 @pytest.mark.api
 @pytest.mark.workflow
 @pytest.mark.parametrize("check_in, check_out, should_be_available", [
-    (get_future_date(100), get_future_date(102), False),  # exact matching
-    (get_future_date(100), get_future_date(101), False),  # full matching inside
-    (get_future_date(101), get_future_date(102), False),  # full matching inside
-    (get_future_date(98), get_future_date(101), False),  # partial matching at the beginning
-    (get_future_date(101), get_future_date(104), False),  # partial matching at the ending
-    (get_future_date(98), get_future_date(100), True),  # date before
-    (get_future_date(102), get_future_date(104), True)  # date after
+    (get_future_date(30), get_future_date(32), False),  # exact matching
+    (get_future_date(30), get_future_date(31), False),  # full matching inside
+    (get_future_date(31), get_future_date(32), False),  # full matching inside
+    (get_future_date(28), get_future_date(31), False),  # partial matching at the beginning
+    (get_future_date(31), get_future_date(34), False),  # partial matching at the ending
+    (get_future_date(28), get_future_date(30), True),  # date before
+    (get_future_date(32), get_future_date(34), True)  # date after
 ])
 def test_room_availability_with_existing_booking(api_client, booking_data, check_in, check_out, should_be_available):
     room_id = booking_data.room_id
@@ -83,7 +83,7 @@ def test_room_availability_with_existing_booking(api_client, booking_data, check
 def test_get_room_by_id(api_client, random_existing_room_id):
     response = api_client.get(f"/room/{random_existing_room_id}")
     assert response.status_code == 200
-    room = Room.model_validate(response.json())
+    room = RoomResponse.model_validate(response.json())
     assert room.room_id == random_existing_room_id
 
 

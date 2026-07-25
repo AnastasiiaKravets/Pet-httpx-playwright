@@ -30,3 +30,16 @@ def get_booking_payload(room_id, date_from, date_to):
         booking_dates=dates,
         **user_data
     )
+
+
+def get_room_payload():
+    faker = Faker()
+    return Room(
+        roomName=f'Room {random.randint(1, 100)}',
+        type=random.choice([item.value for item in RoomType]),
+        accessible=random.choice([True, False]),
+        roomPrice=random.randint(10, 999),
+        image=faker.image_url(),
+        description=faker.sentence(),
+        features=random.choices([item.value for item in RoomFeatures], k=3),
+    )
