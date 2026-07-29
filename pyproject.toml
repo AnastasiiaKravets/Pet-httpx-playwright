@@ -1,19 +1,7 @@
 [tool.pytest.ini_options]
 
 addopts = "--alluredir allure-results --junit-xml=reports/pytest-report.xml --html=reports/report.html --self-contained-html"
-#junit_suite_name = "reports"
 
-# --headed
-#generate_report_on_test = true
-
-#addopts = "--headed --tracing retain-on-failure -n 3"
-
-#from shell debug mode
-#$env:PWDEBUG=1
-#pytest -s -k test_name
-
-#tracing
-#playwright show-trace trace.zip
 markers = [
     "api:          pure HTTP/API tests",
     "ui:           browser UI component tests",

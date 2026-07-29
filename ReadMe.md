@@ -86,7 +86,7 @@ utilities into independent modules.
 - Request/Response validation
 - Shared API fixtures
 - Retry policy
-- Request logging
+- Request info logging
 
 ---
 
@@ -174,7 +174,7 @@ The framework currently supports
 
 - Allure Report
 - HTML Report
-- Playwright Trace on failures
+- Playwright Trace on failures integrated into Allure Report
 
 ---
 
@@ -282,6 +282,12 @@ Run tests in parallel
 pytest -n auto
 ```
 
+Run tests on debug mode
+
+```bash
+$env:PWDEBUG=1
+pytest -s -k test_name
+```
 ---
 
 # Generate Allure Report
@@ -296,6 +302,12 @@ and following
 
 ```bash
 allure open allure-report
+```
+
+View trace
+
+```bash
+playwright show-trace trace.zip
 ```
 
 ---
@@ -317,23 +329,15 @@ The following improvements are planned for future versions of the framework:
 
 ### Framework
 
-- Centralized logging for UI and API
 - Retry mechanism for unstable operations
 - Custom framework exceptions
 - Additional CLI options
 - Better assertion messages
 - Response time assertions
-- Request/Response logging
-
-### Playwright
-
-- Playwright Trace generation
-- Automatic Trace attachment to Allure
 
 ### API
 
 - Retry policy
-- Request Builder
 
 ### Testing
 
