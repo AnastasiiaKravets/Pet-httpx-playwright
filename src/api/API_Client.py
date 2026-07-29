@@ -4,6 +4,7 @@ import httpx
 from pydantic import BaseModel
 
 from config import settings
+from src.helpers.logger import logger
 
 
 class API_Client:
@@ -28,17 +29,40 @@ class API_Client:
     def __exit__(self, *_: object):
         self.client.close()
 
+    def _request(self, method: str, path: str, payload: BaseModel | dict[str, Any] = None, **kwargs):
+        logger.info(dict(
+            name='REQUEST',
+            method=method,
+            path=f'{self.client.base_url}{path}',
+            payload=payload,
+            additional=kwargs,
+            headers=self.client.headers
+        ))
+        if payload is not None:
+            response = self.client.request(method, path, json=self._serialize_payload(payload), **kwargs)
+        else:
+            response = self.client.request(method, path, **kwargs)
+
+        logger.info(dict(
+            name='RESPONSE',
+            method=method,
+            path=f'{self.client.base_url}{path}',
+            status_code=response.status_code,
+            body=response.text
+        ))
+        return response
+
     def get(self, path: str, **kwargs):
-        return self.client.get(path, **kwargs)
+        return self._request('GET', path, **kwargs)
 
     def post(self, path: str, payload: BaseModel | dict[str, Any], **kwargs):
-        return self.client.post(path, json=self._serialize_payload(payload), **kwargs)
+        return self._request('POST', path, payload, **kwargs)
 
     def put(self, path: str, payload: BaseModel | dict[str, Any], **kwargs):
-        return self.client.put(path, json=self._serialize_payload(payload), **kwargs)
+        return self._request('PUT', path, payload, **kwargs)
 
     def delete(self, path: str, **kwargs):
-        return self.client.delete(path, **kwargs)
+        return self._request('DELETE', path, **kwargs)
 
     @staticmethod
     def _serialize_payload(payload: BaseModel | dict[str, Any]):

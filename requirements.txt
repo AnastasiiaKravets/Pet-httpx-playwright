@@ -7,4 +7,5 @@ httpx
 faker
 pytest-html
 allure-pytest
-pytest<9
+pytest
+loguru
