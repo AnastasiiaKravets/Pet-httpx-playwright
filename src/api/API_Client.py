@@ -38,10 +38,18 @@ class API_Client:
             additional=kwargs,
             headers=self.client.headers
         ))
-        if payload is not None:
-            response = self.client.request(method, path, json=self._serialize_payload(payload), **kwargs)
-        else:
-            response = self.client.request(method, path, **kwargs)
+
+        try:
+            if payload is not None:
+                response = self.client.request(method, path, json=self._serialize_payload(payload), **kwargs)
+            else:
+                response = self.client.request(method, path, **kwargs)
+        except httpx.TimeoutException as exc:
+            logger.error(dict(name="REQUEST TIMEOUT", method=method, path=path))
+            raise
+        except httpx.RequestError as exc:
+            logger.error(dict(name="REQUEST ERROR", method=method, path=path, error=str(exc)))
+            raise
 
         logger.info(dict(
             name='RESPONSE',
