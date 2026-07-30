@@ -1,4 +1,5 @@
 from playwright.sync_api import Locator, expect
+from pydantic import BaseModel
 
 from src.ui.common.base_page import BasePage
 
@@ -59,11 +60,8 @@ class MessagesPage(BasePage):
                 return True
         return False
 
-    def wait_at_least_one_message(self, timeout: int = 1000):
+    def wait_at_least_one_message(self, timeout: int = 1000) -> None:
         expect(self.message_rows.first).to_be_visible(timeout=timeout), "There are no messages"
-
-
-from pydantic import BaseModel
 
 
 class MessageRow(BaseModel):

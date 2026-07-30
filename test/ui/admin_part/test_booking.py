@@ -1,5 +1,4 @@
 import pytest
-from playwright.sync_api import Page
 
 from src.helpers.date_helper import get_only_day
 from src.ui.admin_part.pages.admin_room_details_page import AdminRoomDetailsPage
@@ -8,7 +7,7 @@ from src.ui.admin_part.pages.report_page import ReportPage
 
 
 @pytest.mark.ui
-def test_created_booking_in_rooms(auth_page: Page, booking_data):
+def test_created_booking_in_rooms(auth_page, booking_data):
     room_page = AdminRoomDetailsPage(auth_page)
     room_page.open(booking_data.room_id)
     room_page.wait_at_least_one_booking()

@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 import pytest
 
 from src.api.models.booking_models import BookingModelResponse, BookingUpdateModelResponse
@@ -8,12 +10,12 @@ from src.helpers.date_helper import get_date_with_offset
 
 @pytest.mark.api
 def test_create_valid_booking(authorized_api_client, available_room_in_future, clear_booking_data):
-    payload = get_booking_payload(**available_room_in_future)
+    payload = get_booking_payload(**available_room_in_future.dict())
 
     response = authorized_api_client.post('/booking', payload=payload)
     assert response.status_code == 201
 
-    clear_booking_data.update(**available_room_in_future)
+    clear_booking_data.update(**available_room_in_future.dict())
     booking_data = BookingModelResponse.model_validate(response.json())
     assert booking_data.room_id == payload.room_id
     assert booking_data.booking_dates.checkin == payload.booking_dates.checkin

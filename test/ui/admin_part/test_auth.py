@@ -1,5 +1,5 @@
 import pytest
-from playwright.sync_api import Page, expect
+from playwright.sync_api import expect
 
 from src.data.data_generators import get_valid_user
 from src.ui.admin_part.pages.admin_room_page import AdminRoomPage
@@ -7,7 +7,7 @@ from src.ui.admin_part.pages.login_page import LoginPage
 
 
 @pytest.mark.ui
-def test_valid_login(page: Page):
+def test_valid_login(page):
     user = get_valid_user()
 
     login_page = LoginPage(page)

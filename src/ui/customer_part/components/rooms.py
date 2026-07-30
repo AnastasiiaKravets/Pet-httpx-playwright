@@ -20,13 +20,13 @@ class RoomListComponent(BaseComponent):
     def get_room_card(self, index: int) -> RoomCardComponent:
         return RoomCardComponent(self.room_cards.nth(index))
 
-    def count_cards(self):
+    def count_cards(self) -> int:
         return self.room_cards.count()
 
-    def open_first_room(self):
+    def open_first_room(self) -> None:
         RoomCardComponent(self.room_cards.first).book_button.click()
 
-    def wait_at_least_one_room(self, timeout: int = 1000):
+    def wait_at_least_one_room(self, timeout: int = 1000) -> None:
         expect(self.room_cards.first).to_be_visible(timeout=timeout), "There are no room cards"
 
 
@@ -42,8 +42,8 @@ class RoomCardComponent(BaseComponent):
         self.price = self.page.locator("div.card-footer div")
         self.book_button = self.page.get_by_role("link", name="Book now")
 
-    def get_image_src(self):
+    def get_image_src(self) -> str | None:
         return self.image.get_attribute("src")
 
-    def get_amenities_text(self):
+    def get_amenities_text(self) -> str:
         return text(self.amenities).split(' ')

@@ -7,7 +7,7 @@ from src.helpers.logger import logger
 
 
 @dataclass
-class BookingCleanup:
+class BookingCleanupData:
     booking_id: int | None = None
     room_id: int | None = None
     date_from: str | None = None
@@ -19,8 +19,8 @@ class BookingCleanup:
 
 
 @pytest.fixture(scope="function")
-def clear_booking_data(authorized_api_client):
-    cleanup = BookingCleanup()
+def clear_booking_data(authorized_api_client) -> BookingCleanupData:
+    cleanup = BookingCleanupData()
 
     yield cleanup
 
