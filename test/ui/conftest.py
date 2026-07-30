@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from playwright.sync_api import sync_playwright
 
@@ -22,20 +24,41 @@ def browser(playwright):
 
 
 @pytest.fixture(scope='function')
-def page(browser, playwright):
+def new_context(browser, playwright, request):
     manager = PlaywrightManager(playwright)
     context = manager.create_context(browser)
-    page = context.new_page()
-    yield page
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)
+
+    # Initialize the queue on the test node
+    request.node.queued_attachments = []
+
+    yield context
+
+    trace_path = f"trace_{request.node.name}.zip"
+    failed = hasattr(request.node, "rep_call") and request.node.rep_call.failed
+
+    if failed:
+        context.tracing.stop(path=trace_path)
+        if Path(trace_path).exists():
+            # Queue the trace file path to be processed inside the teardown hook
+            request.node.queued_attachments.append({
+                "is_file": True, "source": trace_path,
+                "name": "Playwright Trace", "type": "application/vnd.allure.playwright-trace"
+            })
+    else:
+        context.tracing.stop()
 
     context.close()
 
+@pytest.fixture(scope='function')
+def page(new_context):
+    page = new_context.new_page()
+    yield page
+
 
 @pytest.fixture(scope='function')
-def auth_page(browser, playwright):
-    manager = PlaywrightManager(playwright)
-    context = manager.create_context(browser)
-    context.add_cookies([
+def auth_page(new_context):
+    new_context.add_cookies([
         {
             "name": "token",
             "value": AuthManager.get_token(),
@@ -43,7 +66,5 @@ def auth_page(browser, playwright):
             "path": "/",
         }
     ])
-    page = context.new_page()
+    page = new_context.new_page()
     yield page
-
-    context.close()

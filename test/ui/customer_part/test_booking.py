@@ -48,7 +48,7 @@ def test_successful_booking_for_a_few_days(page, available_room_in_future, clear
 
     selected_days = room_detail_page.booking_details.calendar.get_selected_days()
     assert get_only_day(available_room_in_future['date_from']) == selected_days[0], "Different first day was selected"
-    assert len(selected_days) == expected_days, "fShould be {expected_days} selected days for initial test data"
+    assert len(selected_days) == expected_days, f"Should be {expected_days} selected days for initial test data"
 
     room_detail_page.booking_details.reserve_button.click()
     expect(room_detail_page.booking_details.first_name).to_be_visible()
