@@ -16,7 +16,7 @@ def available_room_in_future(authorized_api_client):
     rooms = room_client.available_rooms(date_from, date_to)
     if len(rooms) == 0:
         room_client.create_room()
-    rooms = room_client.available_rooms(date_from, date_to)
+        rooms = room_client.available_rooms(date_from, date_to)
     return dict(room_id=rooms[0].room_id, date_from=date_from, date_to=date_to)
 
 

@@ -10,6 +10,24 @@ from src.helpers.logger import logger
 
 
 class API_Client:
+    """
+    Base HTTP client — thin wrapper around httpx.
+
+    All API interaction in the framework goes through this class.
+    Never instantiate httpx directly in tests or fixtures.
+
+    Features:
+        - Base URL injection
+        - Auth header management
+        - Structured request/response logging
+        - Automatic retry on HTTP 429, 502, 503, 504
+
+    Args:
+        base_url:    API root, e.g. "https://example.com/api"
+        headers:     Default headers merged into every request
+        timeout:     Per-request timeout in seconds
+    """
+
     RETRY_STATUSES = {429, 502, 503, 504}  # Too Many Requests, Bad Gateway, Service Unavailable, Gateway Timeout
     RETRIES = 3
     BASE_DELAY = 0.5
@@ -34,7 +52,30 @@ class API_Client:
     def __exit__(self, *_: object):
         self.client.close()
 
-    def _request(self, method: str, path: str, payload: BaseModel | dict[str, Any] = None, **kwargs):
+    def _request(self, method: str, path: str, payload: BaseModel | dict[str, Any] = None, **kwargs) -> httpx.Response:
+        """
+        Send an HTTP request and retry it automatically for temporary server errors.
+
+        The request is retried for HTTP 429, 502, 503 and 504 using exponential
+        backoff strategy with a small random jitter to reduce simultaneous retries
+        during parallel execution.
+        All requests and responses are logged. Transport errors are logged and re-raised.
+
+        Args:
+            method: HTTP method.
+            path: Relative API endpoint path.
+            payload: Request body as a Pydantic model or dictionary.
+            **kwargs: Additional arguments passed to ``httpx.Client.request()``.
+
+        Returns:
+            The final ``httpx.Response`` object. This may contain one of the retryable
+            status codes if all retry attempts were exhausted.
+
+        Raises:
+            httpx.TimeoutException: If the request times out.
+            httpx.RequestError: If a transport-level error occurs.
+        """
+
         logger.info(dict(
             name='REQUEST',
             method=method,
@@ -46,7 +87,6 @@ class API_Client:
 
         try:
             for attempt in range(self.RETRIES + 1):
-                print(attempt)
                 if payload is not None:
                     response = self.client.request(method, path, json=self._serialize_payload(payload), **kwargs)
                 else:
@@ -85,20 +125,20 @@ class API_Client:
         ))
         return response
 
-    def get(self, path: str, **kwargs):
+    def get(self, path: str, **kwargs) -> httpx.Response:
         return self._request('GET', path, **kwargs)
 
-    def post(self, path: str, payload: BaseModel | dict[str, Any], **kwargs):
+    def post(self, path: str, payload: BaseModel | dict[str, Any], **kwargs) -> httpx.Response:
         return self._request('POST', path, payload, **kwargs)
 
-    def put(self, path: str, payload: BaseModel | dict[str, Any], **kwargs):
+    def put(self, path: str, payload: BaseModel | dict[str, Any], **kwargs) -> httpx.Response:
         return self._request('PUT', path, payload, **kwargs)
 
-    def delete(self, path: str, **kwargs):
+    def delete(self, path: str, **kwargs) -> httpx.Response:
         return self._request('DELETE', path, **kwargs)
 
     @staticmethod
-    def _serialize_payload(payload: BaseModel | dict[str, Any]):
+    def _serialize_payload(payload: BaseModel | dict[str, Any]) -> dict[str, Any]:
         if isinstance(payload, BaseModel):
             return payload.model_dump(exclude_unset=True, by_alias=True)
         return payload
