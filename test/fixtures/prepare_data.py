@@ -5,6 +5,7 @@ import pytest
 from src.api.clients.booking_client import BookingClient
 from src.api.clients.room_client import RoomClient
 from src.api.models.booking_models import BookingModelResponse
+from src.helpers.logger import logger
 from src.helpers.date_helper import get_date_with_offset
 
 
@@ -12,6 +13,8 @@ from src.helpers.date_helper import get_date_with_offset
 def available_room_in_future(authorized_api_client):
     date_from = get_date_with_offset(30)
     date_to = get_date_with_offset(32)
+    logger.info(f'STARTED FIXTURE looking for available room for dates: {date_from} - {date_to}')
+
     room_client = RoomClient(authorized_api_client)
     rooms = room_client.available_rooms(date_from, date_to)
     if len(rooms) == 0:
@@ -22,6 +25,7 @@ def available_room_in_future(authorized_api_client):
 
 @pytest.fixture(scope='function')
 def booking_data(api_client, available_room_in_future, clear_booking_data) -> BookingModelResponse:
+    logger.info(f'STARTED FIXTURE creating booking data with {available_room_in_future}')
     booking_data = BookingClient(api_client).create_booking(**available_room_in_future)
     clear_booking_data.booking_id = booking_data.booking_id
     return booking_data
