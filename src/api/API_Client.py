@@ -1,3 +1,5 @@
+import random
+import time
 from typing import Any
 
 import httpx
@@ -8,6 +10,9 @@ from src.helpers.logger import logger
 
 
 class API_Client:
+    RETRY_STATUSES = {429, 502, 503, 504}  # Too Many Requests, Bad Gateway, Service Unavailable, Gateway Timeout
+    RETRIES = 3
+    BASE_DELAY = 0.5
 
     def __init__(self, base_url: str, headers=None, timeout: int=None, **kwargs):
         default_headers = {
@@ -40,12 +45,32 @@ class API_Client:
         ))
 
         try:
-            if payload is not None:
-                response = self.client.request(method, path, json=self._serialize_payload(payload), **kwargs)
-            else:
-                response = self.client.request(method, path, **kwargs)
+            for attempt in range(self.RETRIES + 1):
+                print(attempt)
+                if payload is not None:
+                    response = self.client.request(method, path, json=self._serialize_payload(payload), **kwargs)
+                else:
+                    response = self.client.request(method, path, **kwargs)
+
+                if (
+                        (response.status_code not in self.RETRY_STATUSES) or
+                        (attempt == self.RETRIES)
+                ):
+                    break
+
+                # Exponential delay, in order to spread request in time for parallel run
+                delay = self.BASE_DELAY * (2 ** attempt) + random.uniform(0, 0.5)
+                logger.warning(dict(
+                    name='RETRY',
+                    attempt=attempt + 1,
+                    status_code=response.status_code,
+                    detail=f'Next attempt in {delay} seconds.'
+                ))
+                time.sleep(delay)
+
+
         except httpx.TimeoutException as exc:
-            logger.error(dict(name="REQUEST TIMEOUT", method=method, path=path))
+            logger.error(dict(name="REQUEST TIMEOUT", method=method, path=path, error=str(exc)))
             raise
         except httpx.RequestError as exc:
             logger.error(dict(name="REQUEST ERROR", method=method, path=path, error=str(exc)))
