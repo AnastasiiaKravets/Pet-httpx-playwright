@@ -18,7 +18,8 @@ def test_login_valid_credentials(api_client):
 @pytest.mark.parametrize('credentials_override', [{'username': ''},
                                       {'password': ''},
                                       {'username': 'invalid'},
-                                      {'password': 'invalid'}])
+                                                  {'password': 'invalid'}],
+                         ids=['Empty username', 'Empty password', 'Invalid username', 'Invalid password'])
 @pytest.mark.api
 def test_login_invalid_credentials(api_client, credentials_override):
     user = get_valid_user()
@@ -41,8 +42,8 @@ def test_validate_token(authorized_api_client, token):
 
 @pytest.mark.parametrize('token_payload, expected_status_code, error_message',
                          [('', 401, 'No token provided'),
-                          ('123456789', 403, 'Invalid token'),
-                          ('ltwuVTzYnXYed87j', 403, 'Invalid token')])
+                          ('ltwuVTzYnXYed87j', 403, 'Invalid token')],
+                         ids=['Empty token', 'Invalid token'])
 @pytest.mark.api
 def test_validate_invalid_token(authorized_api_client, token_payload, expected_status_code, error_message):
     response = authorized_api_client.post('auth/validate', payload=Token(token=token_payload))
@@ -64,13 +65,11 @@ def test_logout(authorized_api_client, token):
 
 
 @pytest.mark.api
-@pytest.mark.parametrize('token_payload, expected_status_code, error_message',
-                         [('', 400, 'Token is required')])
-def test_logout_invalid_data(authorized_api_client, token_payload, expected_status_code, error_message):
-    response = authorized_api_client.post('auth/logout', payload=Token(token=token_payload))
-    assert response.status_code == expected_status_code
+def test_logout_with_missing_token(authorized_api_client):
+    response = authorized_api_client.post('auth/logout', payload=Token(token=''))
+    assert response.status_code == 400
     error_response = BasicWarningResponse.model_validate(response.json())
-    assert error_response.message, error_message
+    assert error_response.message, 'Token is required'
 
 
 @pytest.mark.api

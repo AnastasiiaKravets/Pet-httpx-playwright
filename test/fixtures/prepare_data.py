@@ -5,13 +5,13 @@ import pytest
 from src.api.clients.booking_client import BookingClient
 from src.api.clients.room_client import RoomClient
 from src.api.models.booking_models import BookingModelResponse
-from src.helpers.date_helper import get_future_date
+from src.helpers.date_helper import get_date_with_offset
 
 
 @pytest.fixture(scope='function')
 def available_room_in_future(authorized_api_client):
-    date_from = get_future_date(30)
-    date_to = get_future_date(32)
+    date_from = get_date_with_offset(30)
+    date_to = get_date_with_offset(32)
     room_client = RoomClient(authorized_api_client)
     rooms = room_client.available_rooms(date_from, date_to)
     if len(rooms) == 0:
