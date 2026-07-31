@@ -250,13 +250,14 @@ jobs:
           print("## Combined Test Results\n")
           print("| Suite | Total | Passed | Failed | Errors | Skipped |")
           print("| :--- | :---: | :---: | :---: | :---: | :---: |")
-          print(format_row("API Tests", api_res))
-          print(format_row("UI Tests", ui_res))
 
           if api_res or ui_res:
               print(f"| **TOTAL** | **{tot_tests}** | **{tot_pass}** | **{tot_fail}** | **{tot_err}** | **{tot_skip}** |")
           else:
               print("| **TOTAL** | *NO SUITES EXECUTED* | - | - | - | - |")
+
+          print(format_row("API Tests", api_res))
+          print(format_row("UI Tests", ui_res))
           EOF
 
       - name: Cache Allure CLI
