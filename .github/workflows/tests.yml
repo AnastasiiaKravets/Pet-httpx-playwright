@@ -17,10 +17,7 @@ permissions:
   checks: write
   actions: write
 
-# -----------------------------------------------------------------------------
-# YAML Anchors or reuse env variables
-# -----------------------------------------------------------------------------
-x-env: &common-env
+env:
   ENV: staging
   AUTH_KEY: ${{ secrets.AUTH_KEY }}
   RESTFULL_USER: ${{ secrets.RESTFULL_USER }}
@@ -35,7 +32,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: staging
-    env: *common-env
 
     steps:
       - uses: actions/checkout@v4
@@ -97,7 +93,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: staging
-    env: *common-env
 
     steps:
       - uses: actions/checkout@v4
