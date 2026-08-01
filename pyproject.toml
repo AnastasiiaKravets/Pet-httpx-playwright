@@ -14,3 +14,23 @@ markers = [
     "wip:          in progress; excluded from all CI runs",
     "workflow:     tests involves a few API endpoints"
 ]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "PTH"]
+ignore = ["C408"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+
+pretty = true
+show_error_codes = true
+show_column_numbers = true
