@@ -31,6 +31,8 @@ https://automationintesting.online
 The framework is designed with maintainability and scalability in mind and separates UI, API, configuration and test
 utilities into independent modules.
 
+[Last Allure test report
+](https://anastasiiakravets.github.io/TAF-Restfull-booker-platform/)
 ---
 
 # Tech Stack
