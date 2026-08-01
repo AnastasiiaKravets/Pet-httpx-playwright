@@ -4,16 +4,15 @@ from src.data.data_generators import get_booking_payload
 
 
 class BookingClient(BaseClient):
-
-    def get_all_booking_for_room(self, room_id):
-        response = self.api_client.get('/booking', params={'roomid': room_id})
+    def get_all_booking_for_room(self, room_id: int) -> list[BookingModelResponse]:
+        response = self.api_client.get("/booking", params={"roomid": room_id})
         return self.assert_response_and_parse(response, BookingListModelResponse).bookings
 
-    def create_booking(self, room_id, date_from, date_to):
+    def create_booking(self, room_id: int, date_from: str, date_to: str) -> BookingModelResponse:
         payload = get_booking_payload(room_id, date_from, date_to)
-        response = self.api_client.post('/booking', payload=payload)
+        response = self.api_client.post("/booking", payload=payload)
         return self.assert_response_and_parse(response, BookingModelResponse)
 
-    def delete_booking(self, booking_id):
-        response = self.api_client.delete(f'/booking/{booking_id}')
+    def delete_booking(self, booking_id: int) -> None:
+        response = self.api_client.delete(f"/booking/{booking_id}")
         self.assert_response_ok(response)

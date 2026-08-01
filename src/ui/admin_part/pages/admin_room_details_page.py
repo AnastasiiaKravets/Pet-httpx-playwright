@@ -5,19 +5,26 @@ from src.ui.admin_part.components.admin_header import AdminHeaderComponent
 from src.ui.common.base_page import BasePage
 
 
+class BookingRow(BaseModel):
+    first_name: str
+    last_name: str
+    price: int
+    deposit_paid: bool
+    check_in: str
+    check_out: str
+
+
 class AdminRoomDetailsPage(BasePage):
-    url_part = 'admin/room'
+    url_part = "admin/room"
 
     def __init__(self, page):
         super().__init__(page)
         self.header = AdminHeaderComponent(page)
 
-        self.booking_rows = self.page.locator('div.detail')
+        self.booking_rows = self.page.locator("div.detail")
 
-    def open(self, room_id):
-        self.page.goto(f'{self.url_part}/{room_id}')
-        expect(self.loading_text).not_to_be_visible()
-        return self
+    def _build_url(self, room_id: int) -> str:
+        return f"{self.url_part}/{room_id}"
 
     def _find_row(self, check_in: str, check_out: str) -> Locator:
         """
@@ -32,9 +39,7 @@ class AdminRoomDetailsPage(BasePage):
             if values[4] == check_in and values[5] == check_out:
                 return row
 
-        raise AssertionError(
-            f"Booking with dates {check_in} - {check_out} was not found."
-        )
+        raise AssertionError(f"Booking with dates {check_in} - {check_out} was not found.")
 
     def get_all_bookings(self) -> list[BookingRow]:
         bookings = []
@@ -80,22 +85,10 @@ class AdminRoomDetailsPage(BasePage):
 
     def contains_booking(self, check_in: str, check_out: str) -> bool:
         for booking in self.get_all_bookings():
-            if (
-                    booking.check_in == check_in
-                    and booking.check_out == check_out
-            ):
+            if booking.check_in == check_in and booking.check_out == check_out:
                 return True
 
         return False
 
     def wait_at_least_one_booking(self, timeout: int = 1000) -> None:
-        expect(self.booking_rows.first).to_be_visible(timeout=timeout), "There are no booking rows"
-
-
-class BookingRow(BaseModel):
-    first_name: str
-    last_name: str
-    price: int
-    deposit_paid: bool
-    check_in: str
-    check_out: str
+        expect(self.booking_rows.first).to_be_visible(timeout=timeout)

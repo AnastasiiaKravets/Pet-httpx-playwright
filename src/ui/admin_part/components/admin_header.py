@@ -4,9 +4,9 @@ from src.ui.common.base_component import BaseComponent
 
 
 class AdminHeaderComponent(BaseComponent):
-
     def __init__(self, page: Page):
-        self.page = page.get_by_role("navigation")
+        component_locator = page.get_by_role("navigation")
+        super().__init__(component_locator)
 
         self.rooms_tab = self.page.get_by_role("link", name="Rooms")
         self.messages_tab = self.page.get_by_role("link", name="Messages")

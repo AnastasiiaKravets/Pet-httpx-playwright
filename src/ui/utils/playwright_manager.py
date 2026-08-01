@@ -2,7 +2,6 @@ from config import settings
 
 
 class PlaywrightManager:
-
     def __init__(self, playwright):
         self.playwright = playwright
 

@@ -4,9 +4,9 @@ from src.ui.common.base_component import BaseComponent
 
 
 class AlertComponent(BaseComponent):
-
     def __init__(self, page: Page):
-        self.page = page.locator(".alert")
+        component_locator = page.locator(".alert")
+        super().__init__(component_locator)
 
         self.error_messages = self.page.locator("li")
 

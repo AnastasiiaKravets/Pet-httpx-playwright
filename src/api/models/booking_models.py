@@ -1,6 +1,4 @@
-from typing import List
-
-from pydantic import Field, EmailStr, PositiveInt
+from pydantic import EmailStr, Field, PositiveInt
 
 from src.api.models.common_models import StrictModel
 
@@ -30,7 +28,7 @@ class BookingModelResponse(StrictModel):
 
 
 class BookingListModelResponse(StrictModel):
-    bookings: List[BookingModelResponse]
+    bookings: list[BookingModelResponse]
 
 
 class BookingUpdateModelResponse(StrictModel):

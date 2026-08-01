@@ -12,8 +12,9 @@ def test_created_booking_in_rooms(auth_page, booking_data):
     room_page.open(booking_data.room_id)
     room_page.wait_at_least_one_booking()
 
-    assert room_page.contains_booking(booking_data.booking_dates.checkin, booking_data.booking_dates.checkout), \
+    assert room_page.contains_booking(booking_data.booking_dates.checkin, booking_data.booking_dates.checkout), (
         "There is no created booking in the room details page"
+    )
     actual_booking = room_page.get_booking(booking_data.booking_dates.checkin, booking_data.booking_dates.checkout)
     assert actual_booking.first_name == booking_data.first_name
     assert actual_booking.last_name == booking_data.last_name

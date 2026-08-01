@@ -1,5 +1,3 @@
-from dataclasses import asdict
-
 import pytest
 
 from src.api.models.booking_models import BookingModelResponse, BookingUpdateModelResponse
@@ -12,7 +10,7 @@ from src.helpers.date_helper import get_date_with_offset
 def test_create_valid_booking(authorized_api_client, available_room_in_future, clear_booking_data):
     payload = get_booking_payload(**available_room_in_future.dict())
 
-    response = authorized_api_client.post('/booking', payload=payload)
+    response = authorized_api_client.post("/booking", payload=payload)
     assert response.status_code == 201
 
     clear_booking_data.update(**available_room_in_future.dict())
@@ -26,7 +24,7 @@ def test_create_valid_booking(authorized_api_client, available_room_in_future, c
 
     clear_booking_data.booking_id = booking_data.booking_id
 
-    response = authorized_api_client.get(f'/booking/{booking_data.booking_id}')
+    response = authorized_api_client.get(f"/booking/{booking_data.booking_id}")
     assert response.status_code == 200
     get_booking_data = BookingModelResponse.model_validate(response.json())
 
@@ -38,15 +36,15 @@ def test_update_booking(authorized_api_client, booking_data):
     booking_data.deposit_paid = True
     booking_data.booking_dates.checkin = get_date_with_offset(56)
     booking_data.booking_dates.checkout = get_date_with_offset(59)
-    booking_data.first_name = booking_data.first_name + 'Updated'
+    booking_data.first_name = booking_data.first_name + "Updated"
 
-    response = authorized_api_client.put(f'/booking/{booking_data.booking_id}', payload=booking_data)
+    response = authorized_api_client.put(f"/booking/{booking_data.booking_id}", payload=booking_data)
     assert response.status_code == 200
     updated_booking_data = BookingUpdateModelResponse.model_validate(response.json()).booking
 
     assert updated_booking_data == booking_data
 
-    response = authorized_api_client.get(f'/booking/{booking_data.booking_id}')
+    response = authorized_api_client.get(f"/booking/{booking_data.booking_id}")
     assert response.status_code == 200
     get_booking_data = BookingModelResponse.model_validate(response.json())
 
@@ -57,14 +55,14 @@ def test_update_booking(authorized_api_client, booking_data):
 def test_update_booking_with_invalid_data(authorized_api_client, booking_data):
     original_booking_data = booking_data.model_copy(deep=True)
     booking_data.deposit_paid = True
-    booking_data.booking_dates.checkin = '123'
-    booking_data.first_name = ''
+    booking_data.booking_dates.checkin = "123"
+    booking_data.first_name = ""
 
-    response = authorized_api_client.put(f'/booking/{booking_data.booking_id}', payload=booking_data)
+    response = authorized_api_client.put(f"/booking/{booking_data.booking_id}", payload=booking_data)
     assert response.status_code == 400
     ExtendedErrorResponse.model_validate(response.json())
 
-    response = authorized_api_client.get(f'/booking/{booking_data.booking_id}')
+    response = authorized_api_client.get(f"/booking/{booking_data.booking_id}")
     assert response.status_code == 200
     get_booking_data = BookingModelResponse.model_validate(response.json())
 

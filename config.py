@@ -1,12 +1,18 @@
 import os
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
-from pydantic_settings import SettingsConfigDict, BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _ENV = os.getenv("ENV", "local")
 print(_ENV)
 _ENV_FILE = Path(__file__).parent / "config" / f".env.{_ENV}"
+
+
+class BrowserType(StrEnum):
+    CHROME = "chromium"
+    FIREFOX = "firefox"
+    WEBKIT = "webkit"
 
 
 class Settings(BaseSettings):
@@ -35,16 +41,8 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         case_sensitive=False,
         # cli_parse_args=True,
-        extra="ignore"
+        extra="ignore",
     )
 
 
-class BrowserType(str, Enum):
-    CHROME = 'chromium'
-    FIREFOX = 'firefox'
-    WEBKIT = 'webkit'
-
-
 settings = Settings()
-
-

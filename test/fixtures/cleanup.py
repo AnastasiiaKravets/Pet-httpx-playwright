@@ -1,3 +1,4 @@
+from collections.abc import Generator
 from dataclasses import dataclass
 
 import pytest
@@ -19,12 +20,12 @@ class BookingCleanupData:
 
 
 @pytest.fixture(scope="function")
-def clear_booking_data(authorized_api_client) -> BookingCleanupData:
+def clear_booking_data(authorized_api_client) -> Generator[BookingCleanupData, None, None]:
     cleanup = BookingCleanupData()
 
     yield cleanup
 
-    logger.info(f'STARTED FIXTURE booking cleanup: {cleanup}')
+    logger.info(f"STARTED FIXTURE booking cleanup: {cleanup}")
 
     booking_client = BookingClient(authorized_api_client)
     if cleanup.booking_id:
@@ -38,12 +39,12 @@ def clear_booking_data(authorized_api_client) -> BookingCleanupData:
                 booking
                 for booking in bookings
                 if booking.booking_dates.checkin == cleanup.date_from
-                   and booking.booking_dates.checkout == cleanup.date_to
+                and booking.booking_dates.checkout == cleanup.date_to
             ),
-            None
+            None,
         )
         if booking:
             booking_client.delete_booking(booking.booking_id)
         return
 
-    logger.warning('No booking data to clean')
+    logger.warning("No booking data to clean")

@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 from typing import Any
 
+
 def assert_unique_field(items: Iterable[Any], field: str) -> None:
     seen = set()
     duplicates = set()
@@ -13,4 +14,4 @@ def assert_unique_field(items: Iterable[Any], field: str) -> None:
         else:
             seen.add(value)
 
-    assert not duplicates, (f"Duplicate values found in '{field}': {duplicates}")
+    assert not duplicates, f"Duplicate values found in '{field}': {duplicates}"

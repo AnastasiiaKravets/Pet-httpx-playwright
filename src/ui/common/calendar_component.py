@@ -4,9 +4,9 @@ from src.ui.common.base_component import BaseComponent
 
 
 class CalendarComponent(BaseComponent):
-
     def __init__(self, page: Page):
-        self.page = page.locator('div.rbc-calendar')
+        component_locator = page.locator("div.rbc-calendar")
+        super().__init__(component_locator)
 
         self.toolbar = self.page.locator(".rbc-toolbar")
         self.today_button = self.toolbar.get_by_role("button", name="Today")
@@ -27,6 +27,9 @@ class CalendarComponent(BaseComponent):
         start_box = start.bounding_box()
         end_box = end.bounding_box()
 
+        if start_box is None or end_box is None:
+            raise AssertionError("Unable to determine coordinates for the selected calendar dates.")
+
         self.page.page.mouse.move(
             start_box["x"] + start_box["width"] / 2,
             start_box["y"] + start_box["height"] / 2,
@@ -42,7 +45,7 @@ class CalendarComponent(BaseComponent):
 
         self.page.page.mouse.up()
 
-    def get_selected_days(self, title='Selected') -> list[int]:
+    def get_selected_days(self, title="Selected") -> list[int]:
         """
         Returns all selected days of the current month.
 

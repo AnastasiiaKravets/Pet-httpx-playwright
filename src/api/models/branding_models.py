@@ -1,4 +1,4 @@
-from pydantic import Field, EmailStr, field_validator
+from pydantic import EmailStr, Field, field_validator
 
 from src.api.models.common_models import StrictModel
 

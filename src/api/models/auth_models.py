@@ -11,8 +11,10 @@ class AuthRequest(StrictModel):
 class Token(StrictModel):
     token: str = Field(max_length=16)
 
+
 class ValidateResponse(StrictModel):
     valid: bool
+
 
 class LogoutResponse(StrictModel):
     success: bool
