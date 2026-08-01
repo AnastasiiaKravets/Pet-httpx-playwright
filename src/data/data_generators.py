@@ -7,11 +7,11 @@ from src.api.models.booking_models import BookingDates, BookingModelRequest
 from src.api.models.room_models import Room, RoomType, RoomFeatures
 
 
-def get_valid_user():
+def get_valid_user() -> dict[str, str]:
     return {'username': settings.RESTFULL_USER, 'password': settings.RESTFULL_PASSWORD}
 
 
-def get_user_reservation_data():
+def get_user_reservation_data() -> dict[str, str]:
     faker = Faker()
     return dict(
         first_name=faker.first_name(),
@@ -21,7 +21,7 @@ def get_user_reservation_data():
     )
 
 
-def get_booking_payload(room_id, date_from, date_to):
+def get_booking_payload(room_id: int, date_from: str, date_to: str) -> BookingModelRequest:
     dates = BookingDates(checkin=date_from, checkout=date_to)
     user_data = get_user_reservation_data()
     return BookingModelRequest(

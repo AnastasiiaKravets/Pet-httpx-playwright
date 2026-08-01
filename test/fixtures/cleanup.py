@@ -3,10 +3,11 @@ from dataclasses import dataclass
 import pytest
 
 from src.api.clients.booking_client import BookingClient
+from src.helpers.logger import logger
 
 
 @dataclass
-class BookingCleanup:
+class BookingCleanupData:
     booking_id: int | None = None
     room_id: int | None = None
     date_from: str | None = None
@@ -18,10 +19,12 @@ class BookingCleanup:
 
 
 @pytest.fixture(scope="function")
-def clear_booking_data(authorized_api_client):
-    cleanup = BookingCleanup()
+def clear_booking_data(authorized_api_client) -> BookingCleanupData:
+    cleanup = BookingCleanupData()
 
     yield cleanup
+
+    logger.info(f'STARTED FIXTURE booking cleanup: {cleanup}')
 
     booking_client = BookingClient(authorized_api_client)
     if cleanup.booking_id:
@@ -43,4 +46,4 @@ def clear_booking_data(authorized_api_client):
             booking_client.delete_booking(booking.booking_id)
         return
 
-    # add log "there is no booking to delete"
+    logger.warning('No booking data to clean')

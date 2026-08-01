@@ -27,7 +27,7 @@ class BookingDetailsComponent(BaseComponent):
         self.cancel_button = self.page.get_by_role("button", name='Cancel')
         self.return_button = self.page.get_by_role("link", name='Return home')
 
-    def fill_user_data(self, user_data: dict):
+    def fill_user_data(self, user_data: dict[str, str]) -> None:
         self.first_name.fill(user_data.get('first_name'))
         self.last_name.fill(user_data.get('last_name'))
         self.email.fill(user_data.get('email'))

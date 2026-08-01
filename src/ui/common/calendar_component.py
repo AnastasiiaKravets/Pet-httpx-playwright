@@ -20,7 +20,7 @@ class CalendarComponent(BaseComponent):
     def date(self, day: int) -> Locator:
         return self.date_cells.get_by_role("button", name=f"{day:02d}")
 
-    def select_range(self, day_from: int, day_to: int):
+    def select_range(self, day_from: int, day_to: int) -> None:
         start = self.date(day_from)
         end = self.date(day_to)
 

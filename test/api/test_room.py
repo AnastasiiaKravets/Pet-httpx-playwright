@@ -1,9 +1,10 @@
+import allure
 import pytest
 
 from src.api.models.booking_models import BookingListModelResponse
 from src.api.models.common_models import ExtendedErrorResponse
 from src.api.models.room_models import RoomResponse, RoomList
-from src.helpers.date_helper import get_future_date, get_past_date, get_date_today
+from src.helpers.date_helper import get_date_with_offset
 
 
 @pytest.mark.api
@@ -16,8 +17,8 @@ def test_get_all_rooms_info(api_client):
 
 @pytest.mark.api
 def test_get_rooms_availability(api_client):
-    params = dict(check_in=get_future_date(100),  # just to be sure there is no booking
-                  check_out=get_future_date(101))
+    params = dict(check_in=get_date_with_offset(100),  # just to be sure there is no booking
+                  check_out=get_date_with_offset(101))
     response = api_client.get("/room", params=params)
 
     assert response.status_code == 200
@@ -25,14 +26,18 @@ def test_get_rooms_availability(api_client):
 
 
 @pytest.mark.api
-@pytest.mark.parametrize("check_in, check_out", [
-    (get_future_date(10), get_future_date(7)),
-    (get_past_date(10), get_past_date(7)),
-    (get_date_today(), get_date_today())
-])
-def test_room_availability_invalid_business_data_rules(api_client, check_in, check_out):
-    params = dict(check_in=check_in,
-                  check_out=check_out)
+@pytest.mark.parametrize("check_in_offset, check_out_offset", [
+    (10, 7),
+    (-10, -7),
+    (0, 0)],
+                         ids=['Check in is bigger than check out', 'Past dates', 'Only today'])
+def test_room_availability_invalid_business_data_rules(api_client, check_in_offset, check_out_offset):
+    check_in = get_date_with_offset(check_in_offset)
+    check_out = get_date_with_offset(check_out_offset)
+    allure.dynamic.parameter('check_in', check_in, excluded=True)
+    allure.dynamic.parameter('check_out', check_out, excluded=True)
+
+    params = dict(check_in=check_in, check_out=check_out_offset)
     response = api_client.get("/room", params=params)
 
     assert response.status_code == 400
@@ -43,8 +48,7 @@ def test_room_availability_invalid_business_data_rules(api_client, check_in, che
 @pytest.mark.parametrize("check_in, check_out", [
     ('asdasd', 'asdasd'),
     ('01.01.2027', '64-01-2026'),
-    ('', '')
-])
+    ('', '')], ids=['Invalid string format', 'invalid date format', 'Empty strings'])
 def test_room_availability_invalid_data_format(api_client, check_in, check_out):
     params = dict(check_in=check_in,
                   check_out=check_out)
@@ -56,16 +60,25 @@ def test_room_availability_invalid_data_format(api_client, check_in, check_out):
 
 @pytest.mark.api
 @pytest.mark.workflow
-@pytest.mark.parametrize("check_in, check_out, should_be_available", [
-    (get_future_date(30), get_future_date(32), False),  # exact matching
-    (get_future_date(30), get_future_date(31), False),  # full matching inside
-    (get_future_date(31), get_future_date(32), False),  # full matching inside
-    (get_future_date(28), get_future_date(31), False),  # partial matching at the beginning
-    (get_future_date(31), get_future_date(34), False),  # partial matching at the ending
-    (get_future_date(28), get_future_date(30), True),  # date before
-    (get_future_date(32), get_future_date(34), True)  # date after
-])
-def test_room_availability_with_existing_booking(api_client, booking_data, check_in, check_out, should_be_available):
+@pytest.mark.parametrize("check_in_offset, check_out_offset, should_be_available", [
+    (30, 32, False),
+    (30, 31, False),
+    (31, 32, False),
+    (31, 28, False),
+    (31, 34, False),
+    (28, 30, True),
+    (32, 34, True)],
+                         ids=['Exact matching', 'Full matching inside from beginning',
+                              'Full matching inside at the end',
+                              'Partial matching at the beginning', 'Partial matching at the ending', 'Date before',
+                              'Date after'])
+def test_room_availability_with_existing_booking(api_client, booking_data, check_in_offset,
+                                                 check_out_offset, should_be_available):
+    check_in = get_date_with_offset(check_in_offset)
+    check_out = get_date_with_offset(check_out_offset)
+    allure.dynamic.parameter('check_in', check_in, excluded=True)
+    allure.dynamic.parameter('check_out', check_out, excluded=True)
+
     room_id = booking_data.room_id
     params = dict(check_in=check_in,
                   check_out=check_out)
