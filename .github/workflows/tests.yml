@@ -104,18 +104,23 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Get Playwright Version
+        id: playwright-version
+        run: |
+          echo "version=$(python -c 'import playwright; print(playwright.__version__)')" >> $GITHUB_OUTPUT
+
       - name: Cache Playwright Browsers
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: playwright install --with-deps
 
-      - name: Install Playwright system dependencies (if cache hit)
+      - name: Install Playwright
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: playwright install-deps
 
@@ -250,13 +255,14 @@ jobs:
           print("## Combined Test Results\n")
           print("| Suite | Total | Passed | Failed | Errors | Skipped |")
           print("| :--- | :---: | :---: | :---: | :---: | :---: |")
-          print(format_row("API Tests", api_res))
-          print(format_row("UI Tests", ui_res))
 
           if api_res or ui_res:
               print(f"| **TOTAL** | **{tot_tests}** | **{tot_pass}** | **{tot_fail}** | **{tot_err}** | **{tot_skip}** |")
           else:
               print("| **TOTAL** | *NO SUITES EXECUTED* | - | - | - | - |")
+
+          print(format_row("API Tests", api_res))
+          print(format_row("UI Tests", ui_res))
           EOF
 
       - name: Cache Allure CLI

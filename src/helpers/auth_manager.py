@@ -15,18 +15,17 @@ class AuthManager:
     def get_token(cls) -> str:
         if cls._token is None or cls._is_expired():
             cls._login()
+        if cls._token is None:
+            raise RuntimeError("Failed to get authentication token.")
         return cls._token
 
     @classmethod
     def _is_expired(cls) -> bool:
-        return (
-                cls._expires_at is None
-                or datetime.now() >= cls._expires_at
-        )
+        return cls._expires_at is None or datetime.now() >= cls._expires_at
 
     @classmethod
     def _login(cls) -> None:
-        response = API_Client(base_url=settings.RESTFULL_BASE_API_URL).post('auth/login', payload=get_valid_user())
+        response = API_Client(base_url=settings.RESTFULL_BASE_API_URL).post("auth/login", payload=get_valid_user())
         assert response.status_code == 200
         token = Token.model_validate(response.json())
         cls._token = token.token

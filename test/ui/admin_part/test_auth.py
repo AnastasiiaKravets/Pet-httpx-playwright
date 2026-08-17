@@ -16,4 +16,4 @@ def test_valid_login(page):
 
     room_page = AdminRoomPage(page)
     expect(page).to_have_url(room_page.full_url())
-    expect(room_page.header.rooms_tab).to_contain_class('active')
+    expect(room_page.header.rooms_tab).to_contain_class("active")

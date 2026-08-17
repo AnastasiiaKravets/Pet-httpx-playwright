@@ -6,7 +6,7 @@ from src.data.data_generators import get_user_reservation_data
 from src.helpers.date_helper import get_date_today, get_date_with_offset, get_only_day
 from src.ui.customer_part.pages.main_page import MainPage
 from src.ui.customer_part.pages.room_details_page import RoomDetailsPage
-from src.ui.utils.helper import text, price
+from src.ui.utils.helper import price, text
 
 
 @pytest.mark.ui
@@ -25,9 +25,11 @@ def test_room_availability(page, api_client):
 
     main_page.room_list.scroll_into_view()
 
-    assert main_page.room_list.count_cards() == expected_room_count, f"There should be {expected_room_count} rooms visible"
+    assert main_page.room_list.count_cards() == expected_room_count, (
+        f"There should be {expected_room_count} rooms visible"
+    )
 
-    for actual_room, expected_room in zip(main_page.room_list.get_all_rooms_cards(), expected_rooms_data):
+    for actual_room, expected_room in zip(main_page.room_list.get_all_rooms_cards(), expected_rooms_data, strict=False):
         assert actual_room.get_image_src() == expected_room.image
         assert text(actual_room.title) == expected_room.type
         assert text(actual_room.description) == expected_room.description
@@ -56,9 +58,11 @@ def test_successful_booking_for_a_few_days(page, available_room_in_future, clear
     room_detail_page.booking_details.fill_user_data(user_reservation_data)
     room_detail_page.booking_details.reserve_button.click()
 
-    expect(room_detail_page.booking_details.title).to_have_text('Booking Confirmed')
-    assert (text(room_detail_page.booking_details.confirmed_dates) ==
-            f'{available_room_in_future.date_from} - {available_room_in_future.date_to}')
+    expect(room_detail_page.booking_details.title).to_have_text("Booking Confirmed")
+    assert (
+        text(room_detail_page.booking_details.confirmed_dates)
+        == f"{available_room_in_future.date_from} - {available_room_in_future.date_to}"
+    )
     expect(room_detail_page.booking_details.return_button).to_be_visible()
 
 
@@ -73,7 +77,13 @@ def test_form_validation_empty_form(page, available_room_in_future):
 
     room_detail_page.booking_details.reserve_button.click()
     expect(room_detail_page.booking_details.alert.page).to_be_visible()
-    expected_errors = ['must not be empty', 'size must be between 3 and 30', 'Lastname should not be blank',
-                       'Firstname should not be blank', 'size must be between 11 and 21', 'must not be empty',
-                       'size must be between 3 and 18']
+    expected_errors = [
+        "must not be empty",
+        "size must be between 3 and 30",
+        "Lastname should not be blank",
+        "Firstname should not be blank",
+        "size must be between 11 and 21",
+        "must not be empty",
+        "size must be between 3 and 18",
+    ]
     assert room_detail_page.booking_details.alert.get_messages().sort() == expected_errors.sort()

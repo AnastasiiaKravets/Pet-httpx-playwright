@@ -1,6 +1,6 @@
 import random
 import time
-from typing import Any
+from typing import Any, Self
 
 import httpx
 from pydantic import BaseModel
@@ -32,27 +32,23 @@ class API_Client:
     RETRIES = 3
     BASE_DELAY = 0.5
 
-    def __init__(self, base_url: str, headers=None, timeout: int=None, **kwargs):
-        default_headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        }
+    def __init__(self, base_url: str, headers: dict[str, str] | None = None, timeout: int | None = None, **kwargs):
+        default_headers = {"Content-Type": "application/json", "Accept": "application/json"}
         if headers:
             default_headers.update(headers)
-        default_timeout = timeout if timeout else settings.DEFAULT_API_TIMEOUT
+        default_timeout = timeout if timeout is not None else settings.DEFAULT_API_TIMEOUT
 
-        self.client = httpx.Client(base_url=base_url,
-                                   timeout=default_timeout,
-                                   headers = default_headers,
-                                   **kwargs)
+        self.client = httpx.Client(base_url=base_url, timeout=default_timeout, headers=default_headers, **kwargs)
 
-    def __enter__(self) -> API_Client:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *_: object):
         self.client.close()
 
-    def _request(self, method: str, path: str, payload: BaseModel | dict[str, Any] = None, **kwargs) -> httpx.Response:
+    def _request(
+        self, method: str, path: str, payload: BaseModel | dict[str, Any] | None = None, **kwargs
+    ) -> httpx.Response:
         """
         Send an HTTP request and retry it automatically for temporary server errors.
 
@@ -76,14 +72,16 @@ class API_Client:
             httpx.RequestError: If a transport-level error occurs.
         """
 
-        logger.info(dict(
-            name='REQUEST',
-            method=method,
-            path=f'{self.client.base_url}{path}',
-            payload=payload,
-            additional=kwargs,
-            headers=self.client.headers
-        ))
+        logger.info(
+            dict(
+                name="REQUEST",
+                method=method,
+                path=f"{self.client.base_url}{path}",
+                payload=payload,
+                additional=kwargs,
+                headers=self.client.headers,
+            )
+        )
 
         try:
             for attempt in range(self.RETRIES + 1):
@@ -92,22 +90,20 @@ class API_Client:
                 else:
                     response = self.client.request(method, path, **kwargs)
 
-                if (
-                        (response.status_code not in self.RETRY_STATUSES) or
-                        (attempt == self.RETRIES)
-                ):
+                if (response.status_code not in self.RETRY_STATUSES) or (attempt == self.RETRIES):
                     break
 
                 # Exponential delay, in order to spread request in time for parallel run
-                delay = self.BASE_DELAY * (2 ** attempt) + random.uniform(0, 0.5)
-                logger.warning(dict(
-                    name='RETRY',
-                    attempt=attempt + 1,
-                    status_code=response.status_code,
-                    detail=f'Next attempt in {delay} seconds.'
-                ))
+                delay = self.BASE_DELAY * (2**attempt) + random.uniform(0, 0.5)
+                logger.warning(
+                    dict(
+                        name="RETRY",
+                        attempt=attempt + 1,
+                        status_code=response.status_code,
+                        detail=f"Next attempt in {delay} seconds.",
+                    )
+                )
                 time.sleep(delay)
-
 
         except httpx.TimeoutException as exc:
             logger.error(dict(name="REQUEST TIMEOUT", method=method, path=path, error=str(exc)))
@@ -116,26 +112,28 @@ class API_Client:
             logger.error(dict(name="REQUEST ERROR", method=method, path=path, error=str(exc)))
             raise
 
-        logger.info(dict(
-            name='RESPONSE',
-            method=method,
-            path=f'{self.client.base_url}{path}',
-            status_code=response.status_code,
-            body=response.text
-        ))
+        logger.info(
+            dict(
+                name="RESPONSE",
+                method=method,
+                path=f"{self.client.base_url}{path}",
+                status_code=response.status_code,
+                body=response.text,
+            )
+        )
         return response
 
     def get(self, path: str, **kwargs) -> httpx.Response:
-        return self._request('GET', path, **kwargs)
+        return self._request("GET", path, **kwargs)
 
     def post(self, path: str, payload: BaseModel | dict[str, Any], **kwargs) -> httpx.Response:
-        return self._request('POST', path, payload, **kwargs)
+        return self._request("POST", path, payload, **kwargs)
 
     def put(self, path: str, payload: BaseModel | dict[str, Any], **kwargs) -> httpx.Response:
-        return self._request('PUT', path, payload, **kwargs)
+        return self._request("PUT", path, payload, **kwargs)
 
     def delete(self, path: str, **kwargs) -> httpx.Response:
-        return self._request('DELETE', path, **kwargs)
+        return self._request("DELETE", path, **kwargs)
 
     @staticmethod
     def _serialize_payload(payload: BaseModel | dict[str, Any]) -> dict[str, Any]:

@@ -1,7 +1,8 @@
+from collections.abc import Generator
 from pathlib import Path
 
 import pytest
-from playwright.sync_api import sync_playwright, Page, Playwright
+from playwright.sync_api import Page, Playwright, sync_playwright
 
 from config import settings
 from src.helpers.auth_manager import AuthManager
@@ -9,7 +10,7 @@ from src.ui.utils.playwright_manager import PlaywrightManager
 
 
 @pytest.fixture(scope="session", autouse=True)
-def playwright() -> Playwright:
+def playwright() -> Generator[Playwright, None, None]:
     with sync_playwright() as p:
         yield p
 
@@ -23,7 +24,7 @@ def browser(playwright):
     browser.close()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def new_context(browser, playwright, request):
     manager = PlaywrightManager(playwright)
     context = manager.create_context(browser)
@@ -41,31 +42,38 @@ def new_context(browser, playwright, request):
         context.tracing.stop(path=trace_path)
         if Path(trace_path).exists():
             # Queue the trace file path to be processed inside the teardown hook
-            request.node.queued_attachments.append({
-                "is_file": True, "source": trace_path,
-                "name": "Playwright Trace", "type": "application/vnd.allure.playwright-trace"
-                # in order to open trace directly from allure report
-            })
+            request.node.queued_attachments.append(
+                {
+                    "is_file": True,
+                    "source": trace_path,
+                    "name": "Playwright Trace",
+                    "type": "application/vnd.allure.playwright-trace",
+                    # in order to open trace directly from allure report
+                }
+            )
     else:
         context.tracing.stop()
 
     context.close()
 
-@pytest.fixture(scope='function')
-def page(new_context) -> Page:
+
+@pytest.fixture(scope="function")
+def page(new_context) -> Generator[Page, None, None]:
     page = new_context.new_page()
     yield page
 
 
-@pytest.fixture(scope='function')
-def auth_page(new_context) -> Page:
-    new_context.add_cookies([
-        {
-            "name": "token",
-            "value": AuthManager.get_token(),
-            "domain": settings.DOMAIN,
-            "path": "/",
-        }
-    ])
+@pytest.fixture(scope="function")
+def auth_page(new_context) -> Generator[Page, None, None]:
+    new_context.add_cookies(
+        [
+            {
+                "name": "token",
+                "value": AuthManager.get_token(),
+                "domain": settings.DOMAIN,
+                "path": "/",
+            }
+        ]
+    )
     page = new_context.new_page()
     yield page

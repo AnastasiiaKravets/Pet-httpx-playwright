@@ -4,9 +4,9 @@ from playwright.sync_api import Locator
 
 
 def text(locator: Locator) -> str:
-    return locator.text_content().lstrip()
+    return (locator.text_content() or "").lstrip()
 
 
 def price(locator: Locator) -> int:
-    price_text = re.sub(r'[^0-9]', '', text(locator))
+    price_text = re.sub(r"[^0-9]", "", text(locator))
     return int(price_text)

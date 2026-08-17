@@ -4,7 +4,7 @@ from src.ui.common.calendar_component import CalendarComponent
 
 
 class ReportPage(BasePage):
-    url_part = 'admin/report'
+    url_part = "admin/report"
 
     def __init__(self, page):
         super().__init__(page)
