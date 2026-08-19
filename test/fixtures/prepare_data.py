@@ -8,7 +8,7 @@ from src.api.clients.booking_client import BookingClient
 from src.api.clients.room_client import RoomClient
 from src.api.models.booking_models import BookingModelResponse
 from src.helpers.date_helper import get_date_with_offset
-from src.helpers.logger import logger
+from src.helpers.logging import logger
 
 
 @dataclass

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from config import settings
-from src.api.API_Client import API_Client
+from src.api.api_client import APIClient
 from src.api.models.auth_models import Token
 from src.data.data_generators import get_valid_user
 
@@ -25,8 +25,9 @@ class AuthManager:
 
     @classmethod
     def _login(cls) -> None:
-        response = API_Client(base_url=settings.RESTFULL_BASE_API_URL).post("auth/login", payload=get_valid_user())
-        assert response.status_code == 200
+        with APIClient(base_url=settings.RESTFULL_BASE_API_URL) as api_client:
+            response = api_client.post("auth/login", payload=get_valid_user())
+            response.raise_for_status()
         token = Token.model_validate(response.json())
         cls._token = token.token
         cls._expires_at = datetime.now() + timedelta(minutes=cls.expiration_in_minutes)

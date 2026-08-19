@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import pytest
 
 from src.api.clients.booking_client import BookingClient
-from src.helpers.logger import logger
+from src.helpers.logging import logger
 
 
 @dataclass

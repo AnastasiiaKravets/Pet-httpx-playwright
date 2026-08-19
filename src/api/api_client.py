@@ -6,10 +6,10 @@ import httpx
 from pydantic import BaseModel
 
 from config import settings
-from src.helpers.logger import logger
+from src.helpers.logging import logger, redact_sensitive_data
 
 
-class API_Client:
+class APIClient:
     """
     Base HTTP client — thin wrapper around httpx.
 
@@ -29,14 +29,13 @@ class API_Client:
     """
 
     RETRY_STATUSES = {429, 502, 503, 504}  # Too Many Requests, Bad Gateway, Service Unavailable, Gateway Timeout
-    RETRIES = 3
     BASE_DELAY = 0.5
 
     def __init__(self, base_url: str, headers: dict[str, str] | None = None, timeout: int | None = None, **kwargs):
         default_headers = {"Content-Type": "application/json", "Accept": "application/json"}
         if headers:
             default_headers.update(headers)
-        default_timeout = timeout if timeout is not None else settings.DEFAULT_API_TIMEOUT
+        default_timeout = timeout if timeout is not None else settings.DEFAULT_REQUEST_TIMEOUT
 
         self.client = httpx.Client(base_url=base_url, timeout=default_timeout, headers=default_headers, **kwargs)
 
@@ -71,39 +70,49 @@ class API_Client:
             httpx.TimeoutException: If the request times out.
             httpx.RequestError: If a transport-level error occurs.
         """
-
-        logger.info(
-            dict(
-                name="REQUEST",
-                method=method,
-                path=f"{self.client.base_url}{path}",
-                payload=payload,
-                additional=kwargs,
-                headers=self.client.headers,
-            )
-        )
-
         try:
-            for attempt in range(self.RETRIES + 1):
-                if payload is not None:
-                    response = self.client.request(method, path, json=self._serialize_payload(payload), **kwargs)
-                else:
-                    response = self.client.request(method, path, **kwargs)
-
-                if (response.status_code not in self.RETRY_STATUSES) or (attempt == self.RETRIES):
-                    break
-
-                # Exponential delay, in order to spread request in time for parallel run
-                delay = self.BASE_DELAY * (2**attempt) + random.uniform(0, 0.5)
-                logger.warning(
-                    dict(
-                        name="RETRY",
-                        attempt=attempt + 1,
-                        status_code=response.status_code,
-                        detail=f"Next attempt in {delay} seconds.",
-                    )
+            logger.info(
+                dict(
+                    name="REQUEST",
+                    method=method,
+                    path=f"{self.client.base_url}{path}",
+                    payload=redact_sensitive_data(self._serialize_payload(payload)),
+                    additional=kwargs,
+                    headers=redact_sensitive_data(dict(self.client.headers)),
                 )
-                time.sleep(delay)
+            )
+            if method == "POST":
+                response = self.client.request(method, path, json=self._serialize_payload(payload), **kwargs)
+            else:
+                for attempt in range(settings.REQUEST_RETRIES + 1):
+                    if payload is not None:
+                        response = self.client.request(method, path, json=self._serialize_payload(payload), **kwargs)
+                    else:
+                        response = self.client.request(method, path, **kwargs)
+
+                    if (response.status_code not in self.RETRY_STATUSES) or (attempt == settings.REQUEST_RETRIES):
+                        break
+
+                    # Exponential delay, in order to spread request in time for parallel run
+                    delay = self.BASE_DELAY * (2**attempt) + random.uniform(0, 0.5)
+                    logger.warning(
+                        dict(
+                            name="RETRY",
+                            attempt=attempt + 1,
+                            status_code=response.status_code,
+                            detail=f"Next attempt in {delay} seconds.",
+                        )
+                    )
+                    time.sleep(delay)
+            logger.info(
+                dict(
+                    name="RESPONSE",
+                    method=method,
+                    path=f"{self.client.base_url}{path}",
+                    status_code=response.status_code,
+                    body=redact_sensitive_data(response.text),
+                )
+            )
 
         except httpx.TimeoutException as exc:
             logger.error(dict(name="REQUEST TIMEOUT", method=method, path=path, error=str(exc)))
@@ -111,16 +120,6 @@ class API_Client:
         except httpx.RequestError as exc:
             logger.error(dict(name="REQUEST ERROR", method=method, path=path, error=str(exc)))
             raise
-
-        logger.info(
-            dict(
-                name="RESPONSE",
-                method=method,
-                path=f"{self.client.base_url}{path}",
-                status_code=response.status_code,
-                body=response.text,
-            )
-        )
         return response
 
     def get(self, path: str, **kwargs) -> httpx.Response:
@@ -136,7 +135,7 @@ class API_Client:
         return self._request("DELETE", path, **kwargs)
 
     @staticmethod
-    def _serialize_payload(payload: BaseModel | dict[str, Any]) -> dict[str, Any]:
+    def _serialize_payload(payload: BaseModel | dict[str, Any] | None) -> dict[str, Any] | None:
         if isinstance(payload, BaseModel):
             return payload.model_dump(exclude_unset=True, by_alias=True)
         return payload
