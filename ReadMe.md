@@ -1,6 +1,3 @@
-https://github.com/mwinteringham/restful-booker-platform/tree/trunk
-https://automationintesting.online/api/auth/swagger-ui/index.html
-
 # Python QA Automation Framework
 
 ![Python](https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white)
@@ -21,6 +18,24 @@ integration, and reusable framework components into a single repository.
 The framework is intended as a portfolio project showcasing modern QA Automation practices.
 
 ---
+[Project Overview](#project-overview)
+
+[Tech Stack](#tech-stack)
+
+[Current Features](#current-features)
+
+[Architecture](#architecture)
+
+[Architectural Trade-offs & Design Decisions](#architectural-trade-offs--design-decisions)
+
+[How to run](#run-locally)
+
+[CI](#continuous-integration)
+
+[Reports](#reports)
+
+[Planned Improvements](#planned-improvements)
+
 
 # Project Overview
 
@@ -31,8 +46,20 @@ https://automationintesting.online
 The framework is designed with maintainability and scalability in mind and separates UI, API, configuration and test
 utilities into independent modules.
 
-[Last Allure test report
-](https://anastasiiakravets.github.io/TAF-Restfull-booker-platform/)
+---
+
+# Project Goals
+
+This repository demonstrates:
+
+- scalable automation framework architecture
+- maintainable Page Object Model
+- reusable API client design
+- typed request/response models
+- CI integration
+- clean project organization
+- production-oriented QA Automation approach
+
 ---
 
 # Tech Stack
@@ -88,7 +115,7 @@ utilities into independent modules.
 - Request/Response validation
 - Shared API fixtures
 - Retry policy
-- Request info logging
+- Request info logging with recursive reduction strategy
 
 ---
 
@@ -134,6 +161,31 @@ maintain.
 
 ---
 
+# Architectural Trade-offs & Design Decisions
+
+- **Explicit API Tests vs. Encapsulated Test Setup:**  
+  * **No High-Level Domain Wrappers for API Tests:** Tests interact directly via `API_Client` methods (e.g., `api_client.post("/booking", json=payload)`). This keeps API interactions fully visible, making the exact HTTP method, URI, and payload fully transparent right in the test body.
+  * **In UI Tests & Fixtures:** Dedicated domain clients (e.g., `BookingClient`, `RoomClient`) are used exclusively for data preparation, pre-conditions, and cleanup. This encapsulates setup logic, keeps UI tests clean, and speeds up test execution.
+
+- **In-Line Schema Validation over Separate Contract Suites:**  
+  Schema validation for both requests and responses is embedded directly into each functional API test via strict Pydantic models. Separate contract testing suites were intentionally avoided to eliminate test duplication: every functional test execution automatically acts as a contract check, ensuring payload and response integrity.
+
+- **Custom retry policies for API:**
+   Retries only for 429, 502, 503, 504 (Too Many Requests, Bad Gateway, Service Unavailable, Gateway Timeout) status codes. No retry for POST method to prevent possible data inconsistency.
+
+- **Embedded Playwright Trace over Screenshots/Video:**  
+  Instead of static screenshots or heavy video overhead, `trace.zip` is automatically generated on test failure and attached directly to the Allure Report. This provides complete DOM state inspection, console logs, and network interception capabilities during debugging.
+
+- **Zero-Tolerance for Flaky Tests (No Auto-Retries):**  
+  Automatic test retries are deliberately disabled. Masking test failures with retries degrades confidence in the test suite and hides underlying race conditions or infrastructure instability. Every failure is treated as an actionable defect.
+
+- **Direct Database Layer (Enterprise Approach):**
+   In enterprise environments, database-level setup and validation may be preferred for speed and reliability. This framework currently relies on public APIs to remain environment-independent.
+
+- **Strict Environment-Based Configuration:**  
+  CLI options were intentionally skipped in favor of centralized `.env` and Environment Variable management, streamlining deployment across local runs and CI/CD runners (GitHub Actions).
+---
+
 # Project Structure
 
 ```text
@@ -167,16 +219,6 @@ maintain.
 ├── README.md
 └── pyproject.toml
 ```
-
----
-
-# Reports
-
-The framework currently supports
-
-- Allure Report
-- HTML Report
-- Playwright Trace on failures integrated into Allure Report
 
 ---
 
@@ -316,12 +358,25 @@ playwright show-trace trace.zip
 
 # Continuous Integration
 
-GitHub Actions is configured to automatically:
+GitHub Actions is configured to perform automatically:
 
 - install dependencies
 - run tests
 - generate reports
 - perform static code analysis
+
+---
+
+# Reports
+
+The framework currently supports
+
+- Allure Report
+- HTML Report
+- Playwright Trace on failures integrated into Allure Report
+
+[Last Allure test report
+](https://anastasiiakravets.github.io/TAF-Restfull-booker-platform/)
 
 ---
 
@@ -333,13 +388,8 @@ The following improvements are planned for future versions of the framework:
 
 - Retry mechanism for unstable operations
 - Custom framework exceptions
-- Additional CLI options
 - Better assertion messages
 - Response time assertions
-
-### API
-
-- Retry policy
 
 ### Testing
 
@@ -353,18 +403,3 @@ The following improvements are planned for future versions of the framework:
 - Example Allure Report screenshots
 - Contributing guide
 - Testing strategy improvements
-
----
-
-# Project Goals
-
-This repository demonstrates:
-
-- scalable automation framework architecture
-- maintainable Page Object Model
-- reusable API client design
-- typed request/response models
-- modern Python development practices
-- CI integration
-- clean project organization
-- production-oriented QA Automation approach

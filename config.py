@@ -4,9 +4,12 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from src.helpers.logging import logger
+
 _ENV = os.getenv("ENV", "local")
-print(_ENV)
 _ENV_FILE = Path(__file__).parent / "config" / f".env.{_ENV}"
+logger.debug(f"ENV: {_ENV}")
+logger.debug(f"ENV_FILE: {_ENV_FILE}")
 
 
 class BrowserType(StrEnum):
@@ -18,11 +21,8 @@ class BrowserType(StrEnum):
 class Settings(BaseSettings):
     ENV: str
     AUTH_KEY: str
-    DEFAULT_API_TIMEOUT: int
-
-    DUMMY_BASE_API_URL: str
-    DUMMY_TEST_API_USERNAME: str
-    DUMMY_TEST_API_PASSWORD: str
+    DEFAULT_REQUEST_TIMEOUT: int
+    REQUEST_RETRIES: int
 
     RESTFULL_BASE_API_URL: str
 

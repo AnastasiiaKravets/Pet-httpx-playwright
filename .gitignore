@@ -11,9 +11,9 @@
 /dataSources/
 /dataSources.local.xml
 config/.env
-/allure-report/
-/allure-results/
-/reports/
+allure-report/
+allure-results/
+reports/
 /trace.zip
 /videos/
 /config/.env.local

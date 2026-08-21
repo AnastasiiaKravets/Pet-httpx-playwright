@@ -39,7 +39,7 @@ def test_room_availability_invalid_business_data_rules(api_client, check_in_offs
     allure.dynamic.parameter("check_in", check_in, excluded=True)
     allure.dynamic.parameter("check_out", check_out, excluded=True)
 
-    params = dict(check_in=check_in, check_out=check_out_offset)
+    params = dict(check_in=check_in, check_out=check_out)
     response = api_client.get("/room", params=params)
 
     assert response.status_code == 400
@@ -120,11 +120,11 @@ def test_get_room_by_invalid_id(api_client):
 
 
 @pytest.mark.api
-def test_delete_room_by_id(authorized_api_client, random_existing_room_id):
-    response = authorized_api_client.delete(f"/room/{random_existing_room_id}")
+def test_delete_room_by_id(authorized_api_client, create_room_data):
+    response = authorized_api_client.delete(f"/room/{create_room_data.room_id}")
     assert response.status_code == 202
 
-    response = authorized_api_client.get(f"/room/{random_existing_room_id}")
+    response = authorized_api_client.get(f"/room/{create_room_data.room_id}")
     assert response.status_code == 500
 
 

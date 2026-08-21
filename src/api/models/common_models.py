@@ -12,6 +12,10 @@ class StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=False, populate_by_name=True)
 
 
+class BasicSuccessResponse(StrictModel):
+    success: bool
+
+
 class BasicErrorResponse(StrictModel):
     error: str
 

@@ -38,18 +38,18 @@ def test_room_availability(page, api_client):
 
 
 @pytest.mark.ui
-def test_successful_booking_for_a_few_days(page, available_room_in_future, clear_booking_data):
+def test_successful_booking_for_a_few_days(page, get_available_room_in_future, clear_booking_data):
     expected_days = 3  # by default from test data
     user_reservation_data = get_user_reservation_data()
-    clear_booking_data.update(**available_room_in_future.dict())  # to clear booking data after test
+    clear_booking_data.update(**get_available_room_in_future.dict())  # to clear booking data after test
 
-    room_detail_page = RoomDetailsPage(page, **available_room_in_future.dict())
+    room_detail_page = RoomDetailsPage(page, **get_available_room_in_future.dict())
     room_detail_page.open()
     room_detail_page.booking_details.scroll_into_view()
     room_detail_page.booking_details.calendar.next_button.click()
 
     selected_days = room_detail_page.booking_details.calendar.get_selected_days()
-    assert get_only_day(available_room_in_future.date_from) == selected_days[0], "Different first day was selected"
+    assert get_only_day(get_available_room_in_future.date_from) == selected_days[0], "Different first day was selected"
     assert len(selected_days) == expected_days, f"Should be {expected_days} selected days for initial test data"
 
     room_detail_page.booking_details.reserve_button.click()
@@ -61,14 +61,14 @@ def test_successful_booking_for_a_few_days(page, available_room_in_future, clear
     expect(room_detail_page.booking_details.title).to_have_text("Booking Confirmed")
     assert (
         text(room_detail_page.booking_details.confirmed_dates)
-        == f"{available_room_in_future.date_from} - {available_room_in_future.date_to}"
+        == f"{get_available_room_in_future.date_from} - {get_available_room_in_future.date_to}"
     )
     expect(room_detail_page.booking_details.return_button).to_be_visible()
 
 
 @pytest.mark.ui
-def test_form_validation_empty_form(page, available_room_in_future):
-    room_detail_page = RoomDetailsPage(page, **available_room_in_future.dict())
+def test_form_validation_empty_form(page, get_available_room_in_future):
+    room_detail_page = RoomDetailsPage(page, **get_available_room_in_future.dict())
     room_detail_page.open()
     room_detail_page.booking_details.scroll_into_view()
 

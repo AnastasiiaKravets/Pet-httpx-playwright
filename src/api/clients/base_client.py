@@ -3,13 +3,13 @@ from typing import TypeVar
 from httpx import Response
 from pydantic import BaseModel
 
-from src.api.API_Client import API_Client
+from src.api.api_client import APIClient
 
 T = TypeVar("T", bound=BaseModel)
 
 
 class BaseClient:
-    def __init__(self, api_client: API_Client):
+    def __init__(self, api_client: APIClient):
         self.api_client = api_client
 
     @staticmethod
