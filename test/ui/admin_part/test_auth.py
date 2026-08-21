@@ -12,7 +12,7 @@ def test_valid_login(page):
 
     login_page = LoginPage(page)
     login_page.open()
-    login_page.login(user)
+    login_page.login_as(user)
 
     room_page = AdminRoomPage(page)
     expect(page).to_have_url(room_page.full_url())

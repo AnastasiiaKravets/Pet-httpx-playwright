@@ -27,10 +27,11 @@ def get_booking_payload(room_id: int, date_from: str, date_to: str) -> BookingMo
     return BookingModelRequest(room_id=room_id, deposit_paid=False, booking_dates=dates, **user_data)
 
 
-def get_room_payload():
+def get_room_payload(room_name: str | None = None):
     faker = Faker()
+    room_name = room_name or f"Room {random.randint(1, 100)}"
     return Room(
-        room_name=f"Room {random.randint(1, 100)}",
+        room_name=room_name,
         type=random.choice([item.value for item in RoomType]),
         accessible=random.choice([True, False]),
         room_price=random.randint(10, 999),

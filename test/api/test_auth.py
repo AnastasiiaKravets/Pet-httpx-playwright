@@ -50,7 +50,7 @@ def test_validate_invalid_token(authorized_api_client, token_payload, expected_s
 
     assert response.status_code == expected_status_code
     error_response = BasicErrorResponse.model_validate(response.json())
-    assert error_response.error, error_message
+    assert error_response.error == error_message
 
 
 @pytest.mark.api

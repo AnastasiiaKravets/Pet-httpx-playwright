@@ -15,7 +15,7 @@ class LoginPage(BasePage):
         self.password_input = self.page.get_by_role("textbox", name="password")
         self.submit_button = self.page.get_by_role("button", name="login")
 
-    def login(self, user_data: dict[str, Any]):
+    def login_as(self, user_data: dict[str, Any]):
         self.username_input.fill(user_data["username"])
         self.password_input.fill(user_data["password"])
         self.submit_button.click()

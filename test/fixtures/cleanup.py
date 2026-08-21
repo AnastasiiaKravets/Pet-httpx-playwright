@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import pytest
 
 from src.api.clients.booking_client import BookingClient
+from src.api.clients.room_client import RoomClient
 from src.helpers.logging import logger
 
 
@@ -17,6 +18,11 @@ class BookingCleanupData:
     def update(self, **kwargs) -> None:
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+
+@dataclass
+class RoomCleanupData:
+    room_id: int | None = None
 
 
 @pytest.fixture(scope="function")
@@ -48,3 +54,13 @@ def clear_booking_data(authorized_api_client) -> Generator[BookingCleanupData, N
         return
 
     logger.warning("No booking data to clean")
+
+
+@pytest.fixture(scope="function")
+def clear_room_data(authorized_api_client):
+    cleanup = RoomCleanupData()
+    yield cleanup
+
+    logger.info(f"STARTED FIXTURE room cleanup for room {cleanup.room_id}")
+    if cleanup.room_id:
+        RoomClient(authorized_api_client).delete_room_if_exists(cleanup.room_id)

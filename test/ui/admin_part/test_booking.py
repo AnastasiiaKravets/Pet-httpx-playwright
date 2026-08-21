@@ -41,7 +41,6 @@ def test_created_booking_in_reports(auth_page, booking_data):
     report_page = ReportPage(auth_page)
     report_page.open()
 
-    report_page.calendar.next_button.click()
     selected_days = report_page.calendar.get_selected_days(full_name)
 
     assert selected_days, "There should be selected days for the created booking"
